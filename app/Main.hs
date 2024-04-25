@@ -1,43 +1,33 @@
+{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+
 module Main (main) where
 
 import Lib
 import Data.Aeson
+import GHC.Generics
 import Data.Text (Text)
 import qualified Data.ByteString.Lazy as B
 import Control.Monad (mzero)
 
 data Student = Student {
     firstName :: !Text,
-    lastName :: !Text,
+    secondName :: !Text,
     age :: Int,
     modules :: [Text]
-} deriving Show
+} deriving (Show, Generic)
 
-instance FromJSON Student where
-    parseJSON (Object v) = Student
-        <$> v .:? "firstName"
-        <*> v .: "lastName"
-        <*> v .: "age"
-        <*> v .: "modules"
-    parseJSON _ = mzero
+instance FromJSON Student
+instance ToJSON Student
 
-instance ToJSON Student where
-    toJSON (Student firstName lastName age modules) = 
-        object [
-            "firstName" .= firstName,
-            "lastName" .= lastName,
-            "age" .= age,
-            "modules" .= modules
-        ]
+jsonFile :: FilePath
+jsonFile = "test.json"
 
-parseJSONFromFile :: FilePath -> IO (Either String [Student])
-parseJSONFromFile p = do
-    c <- B.readFile p
-    return $ eitherDecode c
+getJSON :: IO B.ByteString
+getJSON = B.readFile jsonFile
 
 main :: IO ()
 main = do
-    result <- parseJSONFromFile "test.json"
-    case result of
-        Left err -> putStrLn $ "Error: " ++ err
-        Right people -> mapM_ print people
+    d <- (eitherDecode <$> getJSON) :: IO (Either String [Student])
+    case d of
+        Left err -> putStrLn err
+        Right st -> print st
