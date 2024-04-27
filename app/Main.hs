@@ -3,14 +3,14 @@
 module Main (main) where
 
 import Lib
-import System.Directory
-import GHC.Generics
-import qualified Data.Text.IO as I
-import Data.Text
-import Data.Char
 import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
+import Data.Char
+import Data.Text
+import qualified Data.Text.IO as I
+import GHC.Generics
+import System.Directory
 
 data Student = Student {
     firstName :: !Text,
@@ -49,10 +49,15 @@ fileCheck x = do
             return x
         else return x
 
+getAllStudents :: IO (Either String [Student])
+getAllStudents = (eitherDecode <$> getJSONStudent) 
+
+getAllModules :: IO (Either String [Module])
+getAllModules = (eitherDecode <$> getJSONModule)
 
 addStudent :: IO ()
 addStudent = do
-        d <- (eitherDecode <$> getJSONStudent) :: IO (Either String [Student])
+        d <- getAllStudents
         case d of
             Left err -> Prelude.putStrLn err
             Right students -> do
@@ -62,7 +67,7 @@ addStudent = do
 
 addModule :: IO ()
 addModule = do
-        d <- (eitherDecode <$> getJSONModule) :: IO (Either String [Module])
+        d <- getAllModules
         case d of
             Left err -> Prelude.putStrLn err
             Right modules -> do
@@ -77,21 +82,46 @@ getStudentDetails = do
     Prelude.putStrLn "Second Name:"
     secondName <- I.getLine
     age <- getAge
-    Prelude.putStrLn "Modules (comma-separated):"
-    modulesInput <- Prelude.getLine
-    let modulesList = splitOn "," (pack modulesInput)
-    return Student { firstName = firstName, secondName = secondName, age = age, modules = modulesList }
+    modules <- getModules
+    return Student { firstName = firstName, secondName = secondName, age = age, modules = modules }
 
 getAge :: IO Int
 getAge = do
     Prelude.putStrLn "Age:"
     age <- Prelude.getLine
-    if isNumber' age then return (read age) else getAge
+    if isNumber' age then return (read age) else do
+        Prelude.putStrLn("Incorrect Format")
+        getAge
 
 isNumber' :: String -> Bool
 isNumber' "" = True
 isNumber' (x:xs) = if isDigit x then isNumber' xs else False
 
+getModules :: IO [Text]
+getModules = do
+    Prelude.putStrLn "Modules (seperate with commas):"
+    modulesInput <- Prelude.getLine
+    let modules = splitOn "," (pack modulesInput)
+    allModulesEither <- getAllModules
+    case allModulesEither of
+        Left err -> do
+            putStrLn $ "Error fetching modules: " ++ err
+            getModules
+        Right allModules -> do
+            if checkModules modules allModules then return modules else do
+                Prelude.putStrLn("Didn't Find Module")
+                getModules
+
+checkModules :: [Text] -> [Module] -> Bool
+checkModules [] _ = True
+checkModules (x:xs) m = if checkTextModule m x then checkModules xs m else False
+
+checkTextModule :: [Module] -> Text -> Bool
+checkTextModule [] _ = False
+checkTextModule (x:xs) t = if t == getCode x then True else checkTextModule xs t 
+
+getCode :: Module -> Text
+getCode (Module { code = c }) = c
 
 getModuleDetails :: IO Module
 getModuleDetails = do
