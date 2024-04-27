@@ -6,6 +6,7 @@ import Lib
 import GHC.Generics
 import qualified Data.Text.IO as I
 import Data.Text
+import Data.Char
 import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
@@ -49,13 +50,22 @@ getDetails = do
     firstName <- I.getLine
     Prelude.putStrLn "Second Name:"
     secondName <- I.getLine
-    Prelude.putStrLn "Age:"
-    age <- Prelude.getLine
+    age <- getAge
     Prelude.putStrLn "Modules (comma-separated):"
     modulesInput <- Prelude.getLine
     let modulesList = splitOn "," (pack modulesInput)
     return Student { firstName = firstName
                    , secondName = secondName
-                   , age = read age
+                   , age = age
                    , modules = modulesList
                    }
+
+getAge :: IO Int
+getAge = do
+    Prelude.putStrLn "Age:"
+    age <- Prelude.getLine
+    if isNumber' age then return (read age) else getAge
+
+isNumber' :: String -> Bool
+isNumber' "" = True
+isNumber' (x:xs) = if isDigit x then isNumber' xs else False
