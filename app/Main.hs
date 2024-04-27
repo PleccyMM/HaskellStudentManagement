@@ -19,6 +19,11 @@ data Student = Student {
     modules :: [Text]
 } deriving (Show, Generic, ToJSON, FromJSON)
 
+data Module = Module {
+    code :: !Text,
+    name :: !Text
+} deriving (Show, Generic, ToJSON, FromJSON)
+
 jsonFileStudent :: FilePath
 jsonFileStudent = "students.json"
 
@@ -51,13 +56,22 @@ addStudent = do
         case d of
             Left err -> Prelude.putStrLn err
             Right students -> do
-                student <- getDetails
-                let updatedStudents = student : students
+                s <- getStudentDetails
+                let updatedStudents = s : students
                 B.writeFile jsonFileStudent (encode updatedStudents)
-                
 
-getDetails :: IO Student
-getDetails = do
+addModule :: IO ()
+addModule = do
+        d <- (eitherDecode <$> getJSONModule) :: IO (Either String [Module])
+        case d of
+            Left err -> Prelude.putStrLn err
+            Right modules -> do
+                m <- getModuleDetails
+                let updatedModules = m : modules
+                B.writeFile jsonFileModule (encode updatedModules)
+
+getStudentDetails :: IO Student
+getStudentDetails = do
     Prelude.putStrLn "First Name:"
     firstName <- I.getLine
     Prelude.putStrLn "Second Name:"
@@ -66,11 +80,7 @@ getDetails = do
     Prelude.putStrLn "Modules (comma-separated):"
     modulesInput <- Prelude.getLine
     let modulesList = splitOn "," (pack modulesInput)
-    return Student { firstName = firstName
-                   , secondName = secondName
-                   , age = age
-                   , modules = modulesList
-                   }
+    return Student { firstName = firstName, secondName = secondName, age = age, modules = modulesList }
 
 getAge :: IO Int
 getAge = do
@@ -82,10 +92,18 @@ isNumber' :: String -> Bool
 isNumber' "" = True
 isNumber' (x:xs) = if isDigit x then isNumber' xs else False
 
+
+getModuleDetails :: IO Module
+getModuleDetails = do
+    Prelude.putStrLn "Module Code:"
+    code <- I.getLine
+    Prelude.putStrLn "Name:"
+    name <- I.getLine
+    return Module { code = code, name = name }
+
 main :: IO ()
 main = do
     d <- (eitherDecode <$> getJSONStudent) :: IO (Either String [Student])
     case d of
         Left err -> Prelude.putStrLn err
         Right st -> print st
-            
