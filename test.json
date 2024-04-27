@@ -1,14 +1,1 @@
-[
-    {
-        "firstName" : "Mark",
-        "secondName" : "Twain",
-        "age" : 24,
-        "modules" : ["BS2201", "BS2002"]
-    },
-    {
-        "firstName" : "Angela",
-        "secondName" : "Lent",
-        "age" : 19,
-        "modules" : ["ED0023", "ED2340", "ED2750"]
-    }
-]
+[{"age":20,"firstName":"Reuben","modules":["Hey"],"secondName":"Shaw"},{"age":22,"firstName":"Jessica","modules":["BS0021","MD3990"],"secondName":"Lovegood"},{"age":24,"firstName":"Mark","modules":["BS2201","BS2002"],"secondName":"Twain"},{"age":19,"firstName":"Angela","modules":["ED0023","ED2340","ED2750"],"secondName":"Lent"}]

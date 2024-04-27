@@ -6,7 +6,7 @@ import Lib
 import GHC.Generics
 import Data.Text.Lazy (Text)
 import Data.Text.Lazy.IO as I
-import Data.Aeson (ToJSON, FromJSON, eitherDecode)
+import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
 
@@ -37,7 +37,18 @@ addStudent = do
         d <- (eitherDecode <$> getJSON) :: IO (Either String [Student])
         case d of
             Left err -> Prelude.putStrLn err
-            Right x -> do
-                let st = Student { firstName = "Jessica", secondName = "Lovegood", age = 22, modules = ["BS0021", "MD3990"] }
-                    updatedStudents = st : x
-                I.writeFile jsonFile $ encodeToLazyText updatedStudents
+            Right students -> do
+                student <- getDetails
+                let updatedStudents = student : students
+                B.writeFile jsonFile (encode updatedStudents)
+                
+
+getDetails :: IO Student
+getDetails = do
+    Prelude.putStrLn "First Name:"
+    firstName <- I.getLine
+    Prelude.putStrLn "Second Name:"
+    secondName <- I.getLine
+    Prelude.putStrLn "Age:"
+    age <- Prelude.getLine
+    return Student {firstName=firstName, secondName=secondName, age=(read age), modules=["Hey"]}
