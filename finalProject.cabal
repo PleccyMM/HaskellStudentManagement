@@ -37,6 +37,7 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , split
     , text
   default-language: Haskell2010
 
@@ -54,6 +55,7 @@ executable finalProject-exe
     , base >=4.7 && <5
     , bytestring
     , finalProject
+    , split
     , text
   default-language: Haskell2010
 
@@ -72,5 +74,6 @@ test-suite finalProject-test
     , base >=4.7 && <5
     , bytestring
     , finalProject
+    , split
     , text
   default-language: Haskell2010

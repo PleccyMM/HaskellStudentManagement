@@ -4,8 +4,8 @@ module Main (main) where
 
 import Lib
 import GHC.Generics
-import Data.Text.Lazy (Text)
-import Data.Text.Lazy.IO as I
+import qualified Data.Text.IO as I
+import Data.Text
 import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
@@ -51,4 +51,11 @@ getDetails = do
     secondName <- I.getLine
     Prelude.putStrLn "Age:"
     age <- Prelude.getLine
-    return Student {firstName=firstName, secondName=secondName, age=(read age), modules=["Hey"]}
+    Prelude.putStrLn "Modules (comma-separated):"
+    modulesInput <- Prelude.getLine
+    let modulesList = splitOn "," (pack modulesInput)
+    return Student { firstName = firstName
+                   , secondName = secondName
+                   , age = read age
+                   , modules = modulesList
+                   }
