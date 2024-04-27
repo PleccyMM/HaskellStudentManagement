@@ -3,6 +3,7 @@
 module Main (main) where
 
 import Lib
+import System.Directory
 import GHC.Generics
 import qualified Data.Text.IO as I
 import Data.Text
@@ -18,30 +19,41 @@ data Student = Student {
     modules :: [Text]
 } deriving (Show, Generic, ToJSON, FromJSON)
 
-jsonFile :: FilePath
-jsonFile = "test.json"
+jsonFileStudent :: FilePath
+jsonFileStudent = "students.json"
 
-getJSON :: IO B.ByteString
-getJSON = B.readFile jsonFile
+getJSONStudent :: IO B.ByteString
+getJSONStudent = do
+    filePath <- fileCheck jsonFileStudent
+    B.readFile filePath
 
-main :: IO ()
-main = do
-    d <- (eitherDecode <$> getJSON) :: IO (Either String [Student])
-    case d of
-        Left err -> Prelude.putStrLn err
-        Right st -> print st
-            
+jsonFileModule :: FilePath
+jsonFileModule = "modules.json"
+
+getJSONModule :: IO B.ByteString
+getJSONModule = do
+    filePath <- fileCheck jsonFileModule
+    B.readFile filePath
+
+fileCheck :: FilePath -> IO FilePath
+fileCheck x = do
+    fileExist <- doesFileExist x
+    if not fileExist
+    then do
+            writeFile x "[]"
+            return x
+        else return x
 
 
 addStudent :: IO ()
 addStudent = do
-        d <- (eitherDecode <$> getJSON) :: IO (Either String [Student])
+        d <- (eitherDecode <$> getJSONStudent) :: IO (Either String [Student])
         case d of
             Left err -> Prelude.putStrLn err
             Right students -> do
                 student <- getDetails
                 let updatedStudents = student : students
-                B.writeFile jsonFile (encode updatedStudents)
+                B.writeFile jsonFileStudent (encode updatedStudents)
                 
 
 getDetails :: IO Student
@@ -69,3 +81,11 @@ getAge = do
 isNumber' :: String -> Bool
 isNumber' "" = True
 isNumber' (x:xs) = if isDigit x then isNumber' xs else False
+
+main :: IO ()
+main = do
+    d <- (eitherDecode <$> getJSONStudent) :: IO (Either String [Student])
+    case d of
+        Left err -> Prelude.putStrLn err
+        Right st -> print st
+            
