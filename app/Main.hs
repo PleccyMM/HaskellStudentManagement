@@ -55,13 +55,13 @@ getAllStudents = (eitherDecode <$> getJSONStudent)
 getAllModules :: IO (Either String [Module])
 getAllModules = (eitherDecode <$> getJSONModule)
 
-searchStudent :: Text -> IO ()
-searchStudent t = do
+searchStudents :: String -> IO ()
+searchStudents t = do
     d <- getAllStudents
     case d of
         Left err -> Prelude.putStrLn err
         Right s -> do
-            let result = checkTextStudent s t 
+            let result = checkTextStudent s (pack $ Prelude.map Data.Char.toLower t) 
             case result of
                 Nothing -> Prelude.putStrLn "Didn't find student"
                 Just st -> print st
@@ -76,10 +76,10 @@ checkTextStudent (x:xs) t =
             else checkTextStudent xs t 
 
 getFirstName :: Student -> Text
-getFirstName (Student { firstName = f }) = f
+getFirstName (Student { firstName = f }) = Data.Text.toLower f
 
 getSecondName :: Student -> Text
-getSecondName (Student { secondName = s }) = s
+getSecondName (Student { secondName = s }) = Data.Text.toLower s
 
 addStudent :: IO ()
 addStudent = do
