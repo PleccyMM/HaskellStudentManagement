@@ -55,6 +55,32 @@ getAllStudents = (eitherDecode <$> getJSONStudent)
 getAllModules :: IO (Either String [Module])
 getAllModules = (eitherDecode <$> getJSONModule)
 
+searchStudent :: Text -> IO ()
+searchStudent t = do
+    d <- getAllStudents
+    case d of
+        Left err -> Prelude.putStrLn err
+        Right s -> do
+            let result = checkTextStudent s t 
+            case result of
+                Nothing -> Prelude.putStrLn "Didn't find student"
+                Just st -> print st
+
+checkTextStudent :: [Student] -> Text -> Maybe Student
+checkTextStudent [] _ = Nothing
+checkTextStudent (x:xs) t = 
+    if t == getFirstName x 
+        then Just x 
+        else if t == getSecondName x 
+            then Just x 
+            else checkTextStudent xs t 
+
+getFirstName :: Student -> Text
+getFirstName (Student { firstName = f }) = f
+
+getSecondName :: Student -> Text
+getSecondName (Student { secondName = s }) = s
+
 addStudent :: IO ()
 addStudent = do
         d <- getAllStudents
