@@ -11,6 +11,7 @@ import Data.Text
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
+import System.IO
 
 data Student = Student {
     firstName :: !Text,
@@ -156,6 +157,22 @@ getModuleDetails = do
     Prelude.putStrLn "Name:"
     name <- I.getLine
     return Module { code = code, name = name }
+
+printStudentInfo :: IO ()
+printStudentInfo = do
+    inputHandle <- openFile "AllStudentInfo.txt" WriteMode
+    d <- getAllStudents
+    case d of
+        Left err -> Prelude.putStrLn err
+        Right st -> hPutStr inputHandle $ convertAllStudents st
+    hClose inputHandle
+
+convertAllStudents :: [Student] -> String
+convertAllStudents [] = ""
+convertAllStudents (x:xs) = studentToString x ++ convertAllStudents xs
+
+studentToString :: Student -> String
+studentToString (Student { firstName = f, secondName = s, age = a, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nModules: " ++ Prelude.unwords (Prelude.map unpack m) ++ "\n\n"
 
 main :: IO ()
 main = do
