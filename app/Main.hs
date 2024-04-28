@@ -175,8 +175,4 @@ studentToString :: Student -> String
 studentToString (Student { firstName = f, secondName = s, age = a, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nModules: " ++ Prelude.unwords (Prelude.map unpack m) ++ "\n\n"
 
 main :: IO ()
-main = do
-    d <- (eitherDecode <$> getJSONStudent) :: IO (Either String [Student])
-    case d of
-        Left err -> Prelude.putStrLn err
-        Right st -> print st
+main = Prelude.putStrLn "Welcome to the student management system!"
