@@ -3,15 +3,6 @@
 module Main (main) where
 
 import Lib
-import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
-import Data.Aeson.Text (encodeToLazyText)
-import qualified Data.ByteString.Lazy as B
-import Data.Char
-import Data.Text
-import qualified Data.Text.IO as I
-import GHC.Generics
-import System.Directory
-import System.IO
 
 data Student = Student {
     firstName :: !Text,
@@ -58,15 +49,17 @@ getAllModules :: IO (Either String [Module])
 getAllModules = (eitherDecode <$> getJSONModule)
 
 searchStudents :: String -> IO ()
-searchStudents t = do
+searchStudents s = do 
+    result <- findStudents s
+    maybe (Prelude.putStrLn "Didn't find student") print result
+
+
+findStudents :: String -> IO (Maybe Student)
+findStudents t = do
     d <- getAllStudents
-    case d of
-        Left err -> Prelude.putStrLn err
-        Right s -> do
-            let result = checkTextStudent s (pack $ Prelude.map Data.Char.toLower t) 
-            case result of
-                Nothing -> Prelude.putStrLn "Didn't find student"
-                Just st -> print st
+    return $ case d of
+        Left err -> Nothing
+        Right s -> checkTextStudent s (pack $ Prelude.map Data.Char.toLower t)
 
 checkTextStudent :: [Student] -> Text -> Maybe Student
 checkTextStudent [] _ = Nothing

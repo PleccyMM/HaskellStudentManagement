@@ -61,3 +61,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - finalProject
+    - HUnit == 1.6.2.*
