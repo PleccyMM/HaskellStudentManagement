@@ -1,15 +1,18 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 import Test.HUnit
- 
+import Lib
+
 main :: IO ()
 main = do
-        runTestTTAndExit (test [testSearchEmpty
-                               ,testSearchRealFirst      
-                               ])
+    runTestTTAndExit (test [testSearchEmpty
+                            ,testSearchRealFirst      
+                            ])
 
 testSearchEmpty :: Test
 testSearchEmpty = TestCase ( assertEqual "search empty file" expected (findStudents input) )
-    where input = []
-          expected = Nothing
+    where input = ""
+          expected = IO (Nothing)
 
 testSearchRealFirst :: Test
 testSearchRealFirst = TestCase ( assertEqual "search for an existing student by first name" expected (findStudents input) )
