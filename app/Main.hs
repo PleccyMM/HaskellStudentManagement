@@ -17,6 +17,7 @@ data Student = Student {
     firstName :: !Text,
     secondName :: !Text,
     age :: Int,
+    year :: Int,
     modules :: [Text]
 } deriving (Show, Generic, ToJSON, FromJSON)
 
@@ -108,17 +109,18 @@ getStudentDetails = do
     firstName <- I.getLine
     Prelude.putStrLn "Second Name:"
     secondName <- I.getLine
-    age <- getAge
+    age <- getNumber "Age:"
+    year <- getNumber "Year of Study:"
     modules <- getModules
-    return Student { firstName = firstName, secondName = secondName, age = age, modules = modules }
+    return Student { firstName = firstName, secondName = secondName, age = age, year = year, modules = modules }
 
-getAge :: IO Int
-getAge = do
-    Prelude.putStrLn "Age:"
-    age <- Prelude.getLine
-    if isNumber' age then return (read age) else do
+getNumber :: String -> IO Int
+getNumber s = do
+    Prelude.putStrLn s
+    n <- Prelude.getLine
+    if isNumber' n then return (read n) else do
         Prelude.putStrLn("Incorrect Format")
-        getAge
+        getNumber s
 
 isNumber' :: String -> Bool
 isNumber' "" = True
@@ -172,7 +174,7 @@ convertAllStudents [] = ""
 convertAllStudents (x:xs) = studentToString x ++ convertAllStudents xs
 
 studentToString :: Student -> String
-studentToString (Student { firstName = f, secondName = s, age = a, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nModules: " ++ Prelude.unwords (Prelude.map unpack m) ++ "\n\n"
+studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ Prelude.unwords (Prelude.map unpack m) ++ "\n\n"
 
 main :: IO ()
 main = Prelude.putStrLn "Welcome to the student management system!"
