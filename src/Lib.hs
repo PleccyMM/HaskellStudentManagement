@@ -22,6 +22,7 @@ module Lib
     ,clearModuleFromStudents
     ,setStudentModules
     ,remove
+    ,increaseYear
     ,getModuleDetails
     ,getModules
     ,searchModules
@@ -169,6 +170,11 @@ remove :: Eq a => a -> [a] -> [a]
 remove _ [] = []
 remove i (x:xs) = if i == x then c else x : c
     where c = remove i xs
+
+-- INCREASE YEAR OF STUDY --
+
+increaseYear :: Student -> Int -> Student
+increaseYear s i = s { year = i }
 
 -- ADDING MODULES --
 

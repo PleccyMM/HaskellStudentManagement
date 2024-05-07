@@ -73,6 +73,19 @@ deleteModule i = do
                             B.writeFile jsonFileStudent (encode updatedStudents)
                             B.writeFile jsonFileModule (encode updatedModules)
 
+changeYear :: Int -> [String] -> Int -> IO ()
+changeYear y i a = do
+    d <- getAllStudents
+    case d of
+        Left err -> putStrLn err
+        Right st -> do
+            let d' = findSpecificStudent st (map pack i) a
+            case d' of
+                Nothing -> putStrLn "Couldn't find student"
+                Just s -> do
+                    let updatedStudents = remove s st ++ [increaseYear s y]
+                    B.writeFile jsonFileStudent (encode updatedStudents)
+
 printStudentInfo :: IO ()
 printStudentInfo = do
     inputHandle <- openFile "AllStudentInfo.txt" WriteMode
