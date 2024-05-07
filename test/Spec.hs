@@ -48,7 +48,7 @@ testFirstName = TestCase $ do
 testSecondName :: Test
 testSecondName = TestCase $ do
     let input = exampleRealStudet
-        expected = "shaw"
+        expected = "Shaw"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
         
