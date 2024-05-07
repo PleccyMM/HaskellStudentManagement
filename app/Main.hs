@@ -1,16 +1,17 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric, DeriveAnyClass #-}
 
-module Main (main) where
+module Main (main
+            ,searchStudents
+            ,addStudent
+            ,addModule
+            ,printStudentInfo
+            ,printModuleInfo
+            ) where
 
 import Lib
-import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
-import Data.Aeson.Text (encodeToLazyText)
+import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as B
-import Data.Char
-import Data.Text hiding (putStrLn)
-import qualified Data.Text.IO as I
-import GHC.Generics
-import System.Directory
+import Data.Text
 import System.IO
 
 searchStudents :: String -> IO ()
@@ -33,9 +34,9 @@ addModule = do
         d <- getAllModules
         case d of
             Left err -> putStrLn err
-            Right modules -> do
+            Right mods -> do
                 m <- getModuleDetails
-                let updatedModules = m : modules
+                let updatedModules = m : mods
                 B.writeFile jsonFileModule (encode updatedModules)
 
 printStudentInfo :: IO ()

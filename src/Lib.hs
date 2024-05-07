@@ -30,15 +30,13 @@ module Lib
     ,studentToString
     ) where
 
-import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
-import Data.Aeson.Text (encodeToLazyText)
+import Data.Aeson (ToJSON, FromJSON, eitherDecode)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text hiding (length, filter, map, unwords, putStrLn, getLine, elem)
+import Data.Text hiding (length, filter, map, unwords, elem)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
-import System.IO
 
 -- TYPES --
 
@@ -94,7 +92,7 @@ findStudents :: String -> IO (Maybe Student)
 findStudents t = do
     d <- getAllStudents
     return $ case d of
-        Left err -> Nothing
+        Left _ -> Nothing
         Right s -> checkTextStudent s t
 
 checkTextStudent :: [Student] -> String -> Maybe Student
@@ -118,13 +116,13 @@ getSecondName (Student { secondName = s }) = s
 getStudentDetails :: IO Student
 getStudentDetails = do
     putStrLn "First Name:"
-    firstName <- I.getLine
+    f <- I.getLine
     putStrLn "Second Name:"
-    secondName <- I.getLine
-    age <- getNumber "Age:"
-    year <- getNumber "Year of Study:"
-    modules <- getModules
-    return Student { firstName = firstName, secondName = secondName, age = age, year = year, modules = modules }
+    s <- I.getLine
+    a <- getNumber "Age:"
+    y <- getNumber "Year of Study:"
+    m <- getModules
+    return Student { firstName = f, secondName = s, age = a, year = y, modules = m }
 
 getNumber :: String -> IO Int
 getNumber s = do
@@ -143,23 +141,23 @@ isInt (x:xs) = if isDigit x then isInt xs else False
 getModuleDetails :: IO Module
 getModuleDetails = do
     putStrLn "Module Code:"
-    code <- I.getLine
+    c <- I.getLine
     putStrLn "Name:"
-    name <- I.getLine
-    return Module { code = code, name = name }
+    n <- I.getLine
+    return Module { code = c, name = n }
 
 getModules :: IO [Text]
 getModules = do
     putStrLn "Modules (seperate with commas):"
     modulesInput <- getLine
-    let modules = splitOn "," (pack modulesInput)
+    let m = splitOn "," (pack modulesInput)
     allModulesEither <- getAllModules
     case allModulesEither of
         Left err -> do
             putStrLn $ "Error fetching modules: " ++ err
             getModules
         Right allModules -> do
-            if searchModules modules allModules then return modules else do
+            if searchModules m allModules then return m else do
                 putStrLn("Didn't Find Module")
                 getModules
 
