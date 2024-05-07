@@ -52,7 +52,10 @@ main = do
                             testLineCountFew,
                             testLineCountMany,
                             testStudentToString,
-                            testMultipleStudentToString
+                            testMultipleStudentToString,
+                            testRemoveMissing,
+                            testRemoveExistant,
+                            testRemoveExistantRepeat
                             ])
 
 -- STUDENT DETAILS TESTING --
@@ -456,6 +459,34 @@ testMultipleStudentToString = TestCase $ do
     let actual = convertAllStudents input
     assertEqual "tests conversion from student type to readable string" expected actual
 
+-- REMOVE TESTING --
+
+testRemoveMissing :: Test
+testRemoveMissing = TestCase $ do
+    let input1 = 2
+        input2 = exampleIntegerList
+        expected = exampleIntegerList
+    let actual = remove input1 input2
+    assertEqual "tests removing from a list that doesn't have the value" expected actual
+
+testRemoveExistant :: Test
+testRemoveExistant = TestCase $ do
+    let input1 = "fo"
+        input2 = exampleStringList
+        expected = ["fi", "do", "lo", "ho", "so"]
+    let actual = remove input1 input2
+    assertEqual "tests removing from a list that has the value" expected actual
+
+testRemoveExistantRepeat :: Test
+testRemoveExistantRepeat = TestCase $ do
+    let input1 = 1
+        input2 = exampleIntegerList
+        expected = [3, 7, 8, 0, 4]
+    let actual = remove input1 input2
+    assertEqual "tests removing from a list that has the value multiple times" expected actual
+
+-- EXAMPLE DATA --
+
 exampleStudentFile :: [Student]
 exampleStudentFile = [(Student { 
             firstName = "Reuben", 
@@ -499,3 +530,9 @@ exampleModuleFile = [(Module {code = "BS2221", name = "Discrete Mathematics"}),
 
 exampleRealModule :: Module
 exampleRealModule = (Module {code = "BS2220", name = "Functional Programming"})
+
+exampleIntegerList :: [Int]
+exampleIntegerList = [3, 7, 1, 8, 0, 1, 4]
+
+exampleStringList :: [String]
+exampleStringList = ["fi", "fo", "do", "lo", "ho", "so"]
