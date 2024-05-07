@@ -40,6 +40,8 @@ import GHC.Generics
 import System.Directory
 import System.IO
 
+-- TYPES --
+
 data Student = Student {
     firstName :: !Text,
     secondName :: !Text,
@@ -52,6 +54,8 @@ data Module = Module {
     code :: !Text,
     name :: !Text
 } deriving (Show, Generic, ToJSON, FromJSON, Eq)
+
+-- FILE LOADING --
 
 jsonFileStudent :: FilePath
 jsonFileStudent = "students.json"
@@ -84,6 +88,8 @@ getAllStudents = (eitherDecode <$> getJSONStudent)
 getAllModules :: IO (Either String [Module])
 getAllModules = (eitherDecode <$> getJSONModule)
 
+-- STUDENT SEARCHING --
+
 findStudents :: String -> IO (Maybe Student)
 findStudents t = do
     d <- getAllStudents
@@ -106,6 +112,8 @@ getFirstName (Student { firstName = f }) = f
 
 getSecondName :: Student -> Text
 getSecondName (Student { secondName = s }) = s
+
+-- ADDING STUDENTS --
 
 getStudentDetails :: IO Student
 getStudentDetails = do
@@ -130,6 +138,8 @@ isInt :: String -> Bool
 isInt "" = True
 isInt (x:xs) = if isDigit x then isInt xs else False
 
+-- ADDING MODULES --
+
 getModuleDetails :: IO Module
 getModuleDetails = do
     Prelude.putStrLn "Module Code:"
@@ -153,6 +163,8 @@ getModules = do
                 Prelude.putStrLn("Didn't Find Module")
                 getModules
 
+-- MODULE DETAILS --
+
 searchModules :: [Text] -> [Module] -> Bool
 searchModules [] _ = True
 searchModules (x:xs) m = if checkModules m x then searchModules xs m else False
@@ -168,6 +180,8 @@ findCode :: [Module] -> Text -> Maybe Module
 findCode [] _ = Nothing
 findCode (x:xs) t = if getCode x == t then Just x else findCode xs t
 
+-- ENROLLMENT PRINTING --
+
 checkEnrolled :: [Student] -> Module -> String
 checkEnrolled [] _ = ""
 checkEnrolled (x:xs) m = if Prelude.elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
@@ -178,6 +192,8 @@ getStudentModules (Student { modules = t }) = t
 
 countNumberOfLines :: String -> Int
 countNumberOfLines s = length $ filter (=='\n') s
+
+-- READABILITY PRINTING --
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""
