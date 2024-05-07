@@ -55,6 +55,9 @@ main = do
                             testCheckEnrolledMissing,
                             testCheckEnrolledExistant,
                             testCheckEnrolledEmpty,
+                            testClearModuleMissing,
+                            testClearModuleExistant,
+                            testClearModuleEmpty,
                             testLineCountFew,
                             testLineCountMany,
                             testStudentToString,
@@ -101,7 +104,6 @@ testSetStudentModules = TestCase $ do
         expected = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 2, modules = ["MD0001", "MD0002"]})
     let actual = setStudentModules input1 input2
     assertEqual "checks if setting a student's enrolled modules works as expected" expected actual
-
 
 testIncreaseYear :: Test
 testIncreaseYear = TestCase $ do
@@ -484,6 +486,55 @@ testCheckEnrolledEmpty = TestCase $ do
         expected = ""
     let actual = checkEnrolled input1 input2
     assertEqual "tests getting all student names who are enrolled on a specific module when no students are provided" expected actual
+
+-- CLEAR MODULES TESTING --
+
+testClearModuleMissing :: Test
+testClearModuleMissing = TestCase $ do
+    let input1 = pack "MD0001"
+        input2 = exampleStudentFile
+        expected = exampleStudentFile
+    let actual = clearModuleFromStudents input1 input2
+    assertEqual "tests clearing a module from all students that is missing" expected actual
+
+testClearModuleExistant :: Test
+testClearModuleExistant = TestCase $ do
+    let input1 = pack "BS2220"
+        input2 = exampleStudentFile
+        expected = [(Student { 
+            firstName = "Reuben", 
+            secondName = "Shaw", 
+            age = 20, 
+            year = 2, 
+            modules = ["BS2201","BS2202","BS2221"] }),
+            (Student { 
+            firstName = "Amy", 
+            secondName = "Lovegood", 
+            age = 23, 
+            year = 1, 
+            modules = ["BS1001","BS1101","BS1112"] }),
+            (Student { 
+            firstName = "Vanessa", 
+            secondName = "Thompson", 
+            age = 24, 
+            year = 3, 
+            modules = ["BS3303","BS3312","BS33333"] }),
+            (Student { 
+            firstName = "Vanessa", 
+            secondName = "Richards", 
+            age = 22, 
+            year = 1, 
+            modules = ["BS1001","BS1101","BS1112"] })]
+    let actual = clearModuleFromStudents input1 input2
+    assertEqual "tests clearing a module from all students that is existant" expected actual
+
+testClearModuleEmpty :: Test
+testClearModuleEmpty = TestCase $ do
+    let input1 = pack "BS2220"
+        input2 = []
+        expected = []
+    let actual = clearModuleFromStudents input1 input2
+    assertEqual "tests clearing a module when no students are provided" expected actual
 
 -- STUDENT LINE COUNTER TESTING --
 
