@@ -47,5 +47,23 @@ printStudentInfo = do
         Right st -> hPutStr inputHandle $ convertAllStudents st
     hClose inputHandle
 
+printModuleInfo :: String -> IO ()
+printModuleInfo s = do
+    inputHandle <- openFile (s ++ "ModuleInfo.txt") WriteMode
+    d <- getAllModules
+    case d of
+        Left err -> Prelude.putStrLn err
+        Right ms -> do
+            let m = findCode ms $ pack s
+            case m of
+                Nothing -> Prelude.putStrLn "Didn't find module code"
+                Just mc -> do
+                    d' <- getAllStudents
+                    case d' of
+                        Left err -> Prelude.putStrLn err
+                        Right st -> hPutStr inputHandle ("Module " ++ s ++ " Enrollment:\n\n" ++ c ++ "\nNumber of Students: " ++ show (countNumberOfStudents c))
+                            where c = checkEnrolled st mc
+    hClose inputHandle
+
 main :: IO ()
 main = Prelude.putStrLn "Welcome to the student management system!"

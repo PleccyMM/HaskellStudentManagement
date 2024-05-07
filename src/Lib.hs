@@ -22,6 +22,10 @@ module Lib
     ,searchModules
     ,checkModules
     ,getCode
+    ,findCode
+    ,checkEnrolled
+    ,getStudentModules
+    ,countNumberOfStudents
     ,convertAllStudents
     ,studentToString
     ) where
@@ -30,7 +34,7 @@ import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text
+import Data.Text hiding (length, filter)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
@@ -90,18 +94,18 @@ findStudents t = do
 checkTextStudent :: [Student] -> String -> Maybe Student
 checkTextStudent [] _ = Nothing
 checkTextStudent (x:xs) t = 
-    if t' == getFirstName x 
+    if t' == Data.Text.toLower (getFirstName x) 
         then Just x 
-        else if t' == getSecondName x 
+        else if t' == Data.Text.toLower (getSecondName x) 
             then Just x 
             else checkTextStudent xs t 
         where t' = (pack $ Prelude.map Data.Char.toLower t)
 
 getFirstName :: Student -> Text
-getFirstName (Student { firstName = f }) = Data.Text.toLower f
+getFirstName (Student { firstName = f }) = f
 
 getSecondName :: Student -> Text
-getSecondName (Student { secondName = s }) = Data.Text.toLower s
+getSecondName (Student { secondName = s }) = s
 
 getStudentDetails :: IO Student
 getStudentDetails = do
@@ -159,6 +163,21 @@ checkModules (x:xs) t = if t == getCode x then True else checkModules xs t
 
 getCode :: Module -> Text
 getCode (Module { code = c }) = c
+
+findCode :: [Module] -> Text -> Maybe Module
+findCode [] _ = Nothing
+findCode (x:xs) t = if getCode x == t then Just x else findCode xs t
+
+checkEnrolled :: [Student] -> Module -> String
+checkEnrolled [] _ = ""
+checkEnrolled (x:xs) m = if Prelude.elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
+    where c = checkEnrolled xs m
+
+getStudentModules :: Student -> [Text]
+getStudentModules (Student { modules = t }) = t
+
+countNumberOfStudents :: String -> Int
+countNumberOfStudents s = length $ filter (=='\n') s
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""
