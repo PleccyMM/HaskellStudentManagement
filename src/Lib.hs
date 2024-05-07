@@ -19,6 +19,8 @@ module Lib
     ,getNumber
     ,isInt
     ,findSpecificStudent
+    ,clearModuleFromStudents
+    ,setStudentModules
     ,remove
     ,getModuleDetails
     ,getModules
@@ -108,6 +110,8 @@ checkTextStudent (x:xs) t =
             else checkTextStudent xs t 
         where t' = (pack $ map Data.Char.toLower t)
 
+-- STUDENT DETAILS --
+
 getFirstName :: Student -> Text
 getFirstName (Student { firstName = f }) = f
 
@@ -116,6 +120,9 @@ getSecondName (Student { secondName = s }) = s
 
 getAge :: Student -> Int
 getAge (Student { age = a }) = a
+
+getStudentModules :: Student -> [Text]
+getStudentModules (Student { modules = t }) = t
 
 -- ADDING STUDENTS --
 
@@ -142,7 +149,7 @@ isInt :: String -> Bool
 isInt "" = True
 isInt (x:xs) = if isDigit x then isInt xs else False
 
--- DELETING STUDENTS --
+-- DELETING FROM FILES --
 
 findSpecificStudent :: [Student] -> [Text] -> Int -> Maybe Student
 findSpecificStudent [] _ _ = Nothing
@@ -150,6 +157,13 @@ findSpecificStudent (x:xs) t a = if l (getFirstName x) == l (head t) && l (getSe
                                     then Just x 
                                     else findSpecificStudent xs t a
                                         where l = Data.Text.toLower
+
+clearModuleFromStudents :: Text -> [Student] -> [Student]
+clearModuleFromStudents _ [] = []
+clearModuleFromStudents m (x:xs) = setStudentModules (remove m (getStudentModules x)) x : clearModuleFromStudents m xs
+
+setStudentModules :: [Text] -> Student -> Student
+setStudentModules m s = s { modules = m} 
 
 remove :: Eq a => a -> [a] -> [a]
 remove _ [] = []
@@ -204,9 +218,6 @@ checkEnrolled :: [Student] -> Module -> String
 checkEnrolled [] _ = ""
 checkEnrolled (x:xs) m = if elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
     where c = checkEnrolled xs m
-
-getStudentModules :: Student -> [Text]
-getStudentModules (Student { modules = t }) = t
 
 countNumberOfLines :: String -> Int
 countNumberOfLines s = length $ filter (=='\n') s

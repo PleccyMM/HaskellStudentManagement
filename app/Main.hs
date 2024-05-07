@@ -64,8 +64,14 @@ deleteModule i = do
             case d' of
                 Nothing -> putStrLn "Couldn't find module"
                 Just m -> do
-                    let updatedModules = remove m mods
-                    B.writeFile jsonFileModule (encode updatedModules)
+                    d'' <- getAllStudents
+                    case d'' of
+                        Left err -> putStrLn err
+                        Right st -> do
+                            let updatedStudents = clearModuleFromStudents (pack i) st
+                            let updatedModules = remove m mods
+                            B.writeFile jsonFileStudent (encode updatedStudents)
+                            B.writeFile jsonFileModule (encode updatedModules)
 
 printStudentInfo :: IO ()
 printStudentInfo = do
