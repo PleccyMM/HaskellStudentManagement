@@ -10,6 +10,7 @@ main = do
                             testSecondName,
                             testAge,
                             testEnrolledModules,
+                            testSetStudentModules,
                             testIncreaseYear,
                             testSearchMissing,
                             testSearchFirst,
@@ -93,13 +94,22 @@ testEnrolledModules = TestCase $ do
     let actual = getStudentModules input
     assertEqual "checks if getting a student's modules works as expected" expected actual
 
+testSetStudentModules :: Test
+testSetStudentModules = TestCase $ do
+    let input1 = ["MD0001", "MD0002"]
+        input2 = exampleRealStudet
+        expected = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 2, modules = ["MD0001", "MD0002"]})
+    let actual = setStudentModules input1 input2
+    assertEqual "checks if setting a student's enrolled modules works as expected" expected actual
+
+
 testIncreaseYear :: Test
 testIncreaseYear = TestCase $ do
     let input1 = exampleRealStudet
         input2 = 3
         expected = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 3, modules = ["BS2201","BS2202","BS2220","BS2221"]})
     let actual = increaseYear input1 input2
-    assertEqual "checks if increasing a student's year of study works as expected" expected actual
+    assertEqual "checks if setting a student's year of study works as expected" expected actual
 
         
 -- STUDENT SEARCH TESTING --
