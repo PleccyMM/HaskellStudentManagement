@@ -22,7 +22,7 @@ searchStudents s = do
     d <- findStudents s
     case d of
         Nothing -> putStrLn "Didn't find any students"
-        Just st -> putStrLn $ studentToString st
+        Just st -> putStrLn $ convertAllStudents st
 
 addStudent :: IO ()
 addStudent = do

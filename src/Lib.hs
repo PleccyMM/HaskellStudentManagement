@@ -96,22 +96,23 @@ getAllModules = (eitherDecode <$> getJSONModule)
 
 -- STUDENT SEARCHING --
 
-findStudents :: String -> IO (Maybe Student)
+findStudents :: String -> IO (Maybe [Student])
 findStudents t = do
     d <- getAllStudents
     return $ case d of
         Left _ -> Nothing
-        Right s -> checkTextStudent s t
+        Right s -> Just (checkTextStudent s t)
 
-checkTextStudent :: [Student] -> String -> Maybe Student
-checkTextStudent [] _ = Nothing
-checkTextStudent (x:xs) t = 
-    if t' == Data.Text.toLower (getFirstName x) 
-        then Just x 
-        else if t' == Data.Text.toLower (getSecondName x) 
-            then Just x 
-            else checkTextStudent xs t 
-        where t' = (pack $ map Data.Char.toLower t)
+checkTextStudent :: [Student] -> String -> [Student]
+checkTextStudent [] _ = []
+checkTextStudent (x:xs) t
+    | t' == l (getFirstName x) = x : c
+    | t' == l (getSecondName x) = x : c
+    | otherwise = c
+    where
+        l = Data.Text.toLower
+        t' = pack $ map Data.Char.toLower t
+        c = checkTextStudent xs t
 
 -- STUDENT DETAILS --
 
@@ -244,7 +245,7 @@ countNumberOfLines s = length $ filter (=='\n') s
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""
-convertAllStudents (x:xs) = studentToString x ++ "\n\n" ++ convertAllStudents xs
+convertAllStudents (x:xs) = "\n" ++ studentToString x ++ "\n" ++ convertAllStudents xs
 
 studentToString :: Student -> String
 studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ unwords (map unpack m)

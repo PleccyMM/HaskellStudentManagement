@@ -14,7 +14,7 @@ main = do
                             testSearchSecond,
                             testSearchAllLower,
                             testSearchAllCapital,
-                            --testSearchRepeat,
+                            testSearchRepeat,
                             testIsIntNumber,
                             testIsIntDecimal,
                             testIsIntText,
@@ -74,7 +74,7 @@ testSearchMissing :: Test
 testSearchMissing = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "Jake"
-        expected = Nothing
+        expected = []
     let actual = checkTextStudent input1 input2
     assertEqual "search for a missing student" expected actual
 
@@ -82,7 +82,7 @@ testSearchFirst :: Test
 testSearchFirst = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "Reuben"
-        expected = Just exampleRealStudet
+        expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students first name" expected actual
     
@@ -90,7 +90,7 @@ testSearchSecond :: Test
 testSearchSecond = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "Shaw"
-        expected = Just exampleRealStudet
+        expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students second name" expected actual
     
@@ -98,7 +98,7 @@ testSearchAllLower :: Test
 testSearchAllLower = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "reuben"
-        expected = Just exampleRealStudet
+        expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in lowercase" expected actual
     
@@ -106,28 +106,28 @@ testSearchAllCapital :: Test
 testSearchAllCapital = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "REUBEN"
-        expected = Just exampleRealStudet
+        expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in uppercase" expected actual
 
--- testSearchRepeat :: Test
--- testSearchRepeat = TestCase $ do
---     let input1 = exampleStudentFile
---         input2 = "Vanessa"
---         expected = Just [(Student { 
---             firstName = "Vanessa", 
---             secondName = "Thompson", 
---             age = 24, 
---             year = 3, 
---             modules = ["BS3303","BS3312","BS33333","BS2220"] }),
---             (Student { 
---             firstName = "Vanessa", 
---             secondName = "Richards", 
---             age = 22, 
---             year = 1, 
---             modules = ["BS1001","BS1101","BS1112"] })]
---     let actual = checkTextStudent input1 input2
---     assertEqual "search for students with the same name" expected actual
+testSearchRepeat :: Test
+testSearchRepeat = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = "Vanessa"
+        expected = [(Student { 
+            firstName = "Vanessa", 
+            secondName = "Thompson", 
+            age = 24, 
+            year = 3, 
+            modules = ["BS3303","BS3312","BS33333","BS2220"] }),
+            (Student { 
+            firstName = "Vanessa", 
+            secondName = "Richards", 
+            age = 22, 
+            year = 1, 
+            modules = ["BS1001","BS1101","BS1112"] })]
+    let actual = checkTextStudent input1 input2
+    assertEqual "search for students with the same name" expected actual
 
 -- STRING IS INT TESTING --
 
@@ -340,17 +340,17 @@ testLineCountMany = TestCase $ do
 testStudentToString :: Test
 testStudentToString = TestCase $ do
     let input = exampleRealStudet
-        expected = "First Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n"
+        expected = "First Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221"
     let actual = studentToString input
     assertEqual "tests conversion from student type to readable string" expected actual
 
 testMultipleStudentToString :: Test
 testMultipleStudentToString = TestCase $ do
     let input = exampleStudentFile
-        expected = "First Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n" ++
+        expected = "\nFirst Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n" ++
                     "First Name: Amy\nSecond Name: Lovegood\nAge: 23\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n\n" ++
                     "First Name: Vanessa\nSecond Name: Thompson\nAge: 24\nYear of Study: 3\nModules: BS3303 BS3312 BS33333 BS2220\n\n" ++
-                    "First Name: Vanessa\nSecond Name: Richards\nAge: 22\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n\n"
+                    "First Name: Vanessa\nSecond Name: Richards\nAge: 22\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n"
     let actual = convertAllStudents input
     assertEqual "tests conversion from student type to readable string" expected actual
 
