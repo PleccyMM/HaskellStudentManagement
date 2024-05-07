@@ -16,6 +16,10 @@ main = do
                             testSearchAllLower,
                             testSearchAllCapital,
                             testSearchRepeat,
+                            testSpecificSearchMissing,
+                            testSpecificSearchExistant,
+                            testSpecificSearchEmptyText,
+                            testSpecificSearchExistantCase,
                             testIsIntNumber,
                             testIsIntDecimal,
                             testIsIntText,
@@ -149,6 +153,44 @@ testSearchRepeat = TestCase $ do
             modules = ["BS1001","BS1101","BS1112"] })]
     let actual = checkTextStudent input1 input2
     assertEqual "search for students with the same name" expected actual
+
+-- STUDENT SPECIFIC SEARCH TESTING --
+
+testSpecificSearchMissing :: Test
+testSpecificSearchMissing = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = ["Lucas", "Hall"]
+        input3 = 27
+        expected = Nothing
+    let actual = findSpecificStudent input1 input2 input3
+    assertEqual "search for a specific missing student" expected actual
+
+testSpecificSearchExistant :: Test
+testSpecificSearchExistant = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = ["Reuben", "Shaw"]
+        input3 = 20
+        expected = Just exampleRealStudet
+    let actual = findSpecificStudent input1 input2 input3
+    assertEqual "search for a specific existing student" expected actual
+
+testSpecificSearchEmptyText :: Test --HEAD GIVES ERROR AS LIST EMPTY
+testSpecificSearchEmptyText = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = []
+        input3 = 20
+        expected = Nothing
+    let actual = findSpecificStudent input1 input2 input3
+    assertEqual "search for a specific student without providing a name" expected actual
+
+testSpecificSearchExistantCase :: Test
+testSpecificSearchExistantCase = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = ["REUBEN", "SHAW"]
+        input3 = 20
+        expected = Just exampleRealStudet
+    let actual = findSpecificStudent input1 input2 input3
+    assertEqual "search for a specific existing student all in uppercase" expected actual
 
 -- STRING IS INT TESTING --
 

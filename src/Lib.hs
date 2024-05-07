@@ -161,6 +161,7 @@ checkStudentOverlap (Student { firstName = f, secondName = s, age = a }) st = ca
 -- DELETING FROM FILES --
 
 findSpecificStudent :: [Student] -> [Text] -> Int -> Maybe Student
+findSpecificStudent _ [] _ = Nothing
 findSpecificStudent [] _ _ = Nothing
 findSpecificStudent (x:xs) t a = if l (getFirstName x) == l (head t) && l (getSecondName x) == l (last t) && getAge x == a 
                                     then Just x 
