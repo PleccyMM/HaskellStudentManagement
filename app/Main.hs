@@ -6,6 +6,7 @@ module Main (main
             ,deleteStudent
             ,addModule
             ,deleteModule
+            ,changeYear
             ,printStudentInfo
             ,printModuleInfo
             ) where
@@ -18,8 +19,10 @@ import System.IO
 
 searchStudents :: String -> IO ()
 searchStudents s = do 
-    result <- findStudents s
-    maybe (putStrLn "Didn't find student") print result
+    d <- findStudents s
+    case d of
+        Nothing -> putStrLn "Didn't find any students"
+        Just st -> putStrLn $ studentToString st
 
 addStudent :: IO ()
 addStudent = do

@@ -232,7 +232,7 @@ countNumberOfLines s = length $ filter (=='\n') s
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""
-convertAllStudents (x:xs) = studentToString x ++ convertAllStudents xs
+convertAllStudents (x:xs) = studentToString x ++ "\n\n" ++ convertAllStudents xs
 
 studentToString :: Student -> String
-studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ unwords (map unpack m) ++ "\n\n"
+studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ unwords (map unpack m)
