@@ -36,6 +36,8 @@ main = do
                             testMultipleStudentToString
                             ])
 
+-- NAME TESTING --
+
 testFirstName :: Test
 testFirstName = TestCase $ do
     let input = exampleRealStudet
@@ -49,6 +51,8 @@ testSecondName = TestCase $ do
         expected = "shaw"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
+        
+-- STUDENT SEARCH TESTING --
 
 testSearchMissing :: Test
 testSearchMissing = TestCase $ do
@@ -109,6 +113,8 @@ testSearchAllCapital = TestCase $ do
 --     let actual = checkTextStudent input1 input2
 --     assertEqual "search for students with the same name" expected actual
 
+-- STRING IS INT TESTING --
+
 testIsIntNumber :: Test
 testIsIntNumber = TestCase $ do
     let input = "23"
@@ -129,6 +135,8 @@ testIsIntText = TestCase $ do
         expected = False
     let actual = isInt input
     assertEqual "checks if a string of text is an integer" expected actual
+
+-- MODULE CODE TESTING --
         
 testModuleCode :: Test
 testModuleCode = TestCase $ do
@@ -136,6 +144,8 @@ testModuleCode = TestCase $ do
         expected = "BS2220"
     let actual = getCode input
     assertEqual "checks if getting module codes works as expected" expected actual
+
+-- CHECK MODULE TESTING (NOT SEARCHING) --
 
 testCheckModuleMissing :: Test
 testCheckModuleMissing = TestCase $ do
@@ -176,6 +186,8 @@ testCheckModuleEmptyModules = TestCase $ do
         expected = False
     let actual = checkModules input2 input1
     assertEqual "check for a module with no input" expected actual
+
+-- SEARCH MODULE TESTING --
 
 testSearchModuleSingleMissing :: Test
 testSearchModuleSingleMissing = TestCase $ do
@@ -248,6 +260,8 @@ testSearchModuleEmptyModule = TestCase $ do
         expected = False
     let actual = searchModules input1 input2
     assertEqual "search for a module without providing any modules" expected actual
+
+-- STUDENT TO STRING TESTING --
 
 testStudentToString :: Test
 testStudentToString = TestCase $ do
