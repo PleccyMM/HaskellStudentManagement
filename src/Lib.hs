@@ -25,7 +25,7 @@ module Lib
     ,findCode
     ,checkEnrolled
     ,getStudentModules
-    ,countNumberOfStudents
+    ,countNumberOfLines
     ,convertAllStudents
     ,studentToString
     ) where
@@ -176,8 +176,8 @@ checkEnrolled (x:xs) m = if Prelude.elem (getCode m) (getStudentModules x) then 
 getStudentModules :: Student -> [Text]
 getStudentModules (Student { modules = t }) = t
 
-countNumberOfStudents :: String -> Int
-countNumberOfStudents s = length $ filter (=='\n') s
+countNumberOfLines :: String -> Int
+countNumberOfLines s = length $ filter (=='\n') s
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""

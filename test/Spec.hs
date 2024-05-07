@@ -8,6 +8,7 @@ main :: IO ()
 main = do
     runTestTTAndExit (test [testFirstName,
                             testSecondName,
+                            testEnrolledModules,
                             testSearchMissing,
                             testSearchFirst,
                             testSearchSecond,
@@ -17,7 +18,9 @@ main = do
                             testIsIntNumber,
                             testIsIntDecimal,
                             testIsIntText,
-                            testModuleCode,
+                            testGetModuleCode,
+                            testFindModuleCodeMissing,
+                            testFindModuleCodeExistant,
                             testCheckModuleMissing,
                             testCheckModuleExistant,
                             testCheckModuleCase,
@@ -32,11 +35,16 @@ main = do
                             testSearchModuleDuplicate,
                             testSearchModuleEmptyText,
                             testSearchModuleEmptyModule,
+                            testCheckEnrolledMissing,
+                            testCheckEnrolledExistant,
+                            testCheckEnrolledEmpty,
+                            testLineCountFew,
+                            testLineCountMany,
                             testStudentToString,
                             testMultipleStudentToString
                             ])
 
--- NAME TESTING --
+-- STUDENT DETAILS TESTING --
 
 testFirstName :: Test
 testFirstName = TestCase $ do
@@ -51,6 +59,14 @@ testSecondName = TestCase $ do
         expected = "Shaw"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
+
+testEnrolledModules :: Test
+testEnrolledModules = TestCase $ do
+    let input = exampleRealStudet
+        expected = ["BS2201","BS2202","BS2220","BS2221"]
+    let actual = getStudentModules input
+    assertEqual "checks if getting a student's modules works as expected" expected actual
+
         
 -- STUDENT SEARCH TESTING --
 
@@ -103,7 +119,7 @@ testSearchAllCapital = TestCase $ do
 --             secondName = "Thompson", 
 --             age = 24, 
 --             year = 3, 
---             modules = ["BS3303","BS3312","BS33333","BS3301"] }),
+--             modules = ["BS3303","BS3312","BS33333","BS2220"] }),
 --             (Student { 
 --             firstName = "Vanessa", 
 --             secondName = "Richards", 
@@ -138,12 +154,28 @@ testIsIntText = TestCase $ do
 
 -- MODULE CODE TESTING --
         
-testModuleCode :: Test
-testModuleCode = TestCase $ do
+testGetModuleCode :: Test
+testGetModuleCode = TestCase $ do
     let input = exampleRealModule
         expected = "BS2220"
     let actual = getCode input
     assertEqual "checks if getting module codes works as expected" expected actual
+        
+testFindModuleCodeMissing :: Test
+testFindModuleCodeMissing = TestCase $ do
+    let input1 = exampleModuleFile
+        input2 = pack "MD0001"
+        expected = Nothing
+    let actual = findCode input1 input2
+    assertEqual "checks if getting module codes works as expected by checking for a missing module" expected actual
+
+testFindModuleCodeExistant :: Test
+testFindModuleCodeExistant = TestCase $ do
+    let input1 = exampleModuleFile
+        input2 = pack "BS2220"
+        expected = Just exampleRealModule
+    let actual = findCode input1 input2
+    assertEqual "checks if getting module codes works as expected by checking for an existant module" expected actual
 
 -- CHECK MODULE TESTING (NOT SEARCHING) --
 
@@ -261,6 +293,48 @@ testSearchModuleEmptyModule = TestCase $ do
     let actual = searchModules input1 input2
     assertEqual "search for a module without providing any modules" expected actual
 
+-- CHECK ENROLLED TESTING --
+
+testCheckEnrolledMissing :: Test
+testCheckEnrolledMissing = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = (Module {code = "MD0001", name = "Media Intro"})
+        expected = ""
+    let actual = checkEnrolled input1 input2
+    assertEqual "tests getting all student names who are enrolled on a missing module" expected actual
+
+testCheckEnrolledExistant :: Test
+testCheckEnrolledExistant = TestCase $ do
+    let input1 = exampleStudentFile
+        input2 = exampleRealModule
+        expected = "Reuben Shaw\nVanessa Thompson\n"
+    let actual = checkEnrolled input1 input2
+    assertEqual "tests getting all student names who are enrolled on a specific module" expected actual
+
+testCheckEnrolledEmpty :: Test
+testCheckEnrolledEmpty = TestCase $ do
+    let input1 = []
+        input2 = exampleRealModule
+        expected = ""
+    let actual = checkEnrolled input1 input2
+    assertEqual "tests getting all student names who are enrolled on a specific module when no students are provided" expected actual
+
+-- STUDENT LINE COUNTER TESTING --
+
+testLineCountFew :: Test
+testLineCountFew = TestCase $ do
+    let input = "1\n2\n3\n"
+        expected = 3
+    let actual = countNumberOfLines input
+    assertEqual "checks if line counting codes works as expected with 3 lines" expected actual
+
+testLineCountMany :: Test
+testLineCountMany = TestCase $ do
+    let input = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n"
+        expected = 13
+    let actual = countNumberOfLines input
+    assertEqual "checks if line counting codes works as expected with 13 lines" expected actual
+
 -- STUDENT TO STRING TESTING --
 
 testStudentToString :: Test
@@ -275,7 +349,7 @@ testMultipleStudentToString = TestCase $ do
     let input = exampleStudentFile
         expected = "First Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n" ++
                     "First Name: Amy\nSecond Name: Lovegood\nAge: 23\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n\n" ++
-                    "First Name: Vanessa\nSecond Name: Thompson\nAge: 24\nYear of Study: 3\nModules: BS3303 BS3312 BS33333 BS3301\n\n" ++
+                    "First Name: Vanessa\nSecond Name: Thompson\nAge: 24\nYear of Study: 3\nModules: BS3303 BS3312 BS33333 BS2220\n\n" ++
                     "First Name: Vanessa\nSecond Name: Richards\nAge: 22\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n\n"
     let actual = convertAllStudents input
     assertEqual "tests conversion from student type to readable string" expected actual
@@ -298,7 +372,7 @@ exampleStudentFile = [(Student {
             secondName = "Thompson", 
             age = 24, 
             year = 3, 
-            modules = ["BS3303","BS3312","BS33333","BS3301"] }),
+            modules = ["BS3303","BS3312","BS33333","BS2220"] }),
             (Student { 
             firstName = "Vanessa", 
             secondName = "Richards", 
