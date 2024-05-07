@@ -18,6 +18,7 @@ module Lib
     ,getStudentDetails
     ,getNumber
     ,isInt
+    ,checkStudentOverlap
     ,findSpecificStudent
     ,clearModuleFromStudents
     ,setStudentModules
@@ -25,6 +26,7 @@ module Lib
     ,increaseYear
     ,getModuleDetails
     ,getModules
+    ,checkModuleOverlap
     ,searchModules
     ,checkModules
     ,getCode
@@ -150,6 +152,11 @@ isInt :: String -> Bool
 isInt "" = True
 isInt (x:xs) = if isDigit x then isInt xs else False
 
+checkStudentOverlap :: Student -> [Student] -> Bool
+checkStudentOverlap (Student { firstName = f, secondName = s, age = a }) st = case (findSpecificStudent st [f,s] a) of 
+                                                                                Nothing -> False 
+                                                                                Just _ -> True
+
 -- DELETING FROM FILES --
 
 findSpecificStudent :: [Student] -> [Text] -> Int -> Maybe Student
@@ -200,6 +207,11 @@ getModules = do
             if searchModules m allModules then return m else do
                 putStrLn("Didn't Find Module")
                 getModules
+
+checkModuleOverlap :: Module -> [Module] -> Bool
+checkModuleOverlap (Module { code = c }) m = case (findCode m c) of 
+                                                Nothing -> False 
+                                                Just _ -> True
 
 -- MODULE DETAILS --
 

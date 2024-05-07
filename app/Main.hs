@@ -29,10 +29,11 @@ addStudent = do
         d <- getAllStudents
         case d of
             Left err -> putStrLn err
-            Right students -> do
+            Right st -> do
                 s <- getStudentDetails
-                let updatedStudents = s : students
-                B.writeFile jsonFileStudent (encode updatedStudents)
+                if checkStudentOverlap s st then putStrLn "Duplicate student" else do
+                    let updatedStudents = s : st
+                    B.writeFile jsonFileStudent (encode updatedStudents)
 
 deleteStudent :: [String] -> Int -> IO ()
 deleteStudent i a = do
@@ -54,8 +55,9 @@ addModule = do
             Left err -> putStrLn err
             Right mods -> do
                 m <- getModuleDetails
-                let updatedModules = m : mods
-                B.writeFile jsonFileModule (encode updatedModules)
+                if checkModuleOverlap m mods then putStrLn "Duplicate module" else do
+                    let updatedModules = m : mods
+                    B.writeFile jsonFileModule (encode updatedModules)
 
 deleteModule :: String -> IO ()
 deleteModule i = do
