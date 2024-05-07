@@ -8,6 +8,7 @@ main :: IO ()
 main = do
     runTestTTAndExit (test [testFirstName,
                             testSecondName,
+                            testAge,
                             testEnrolledModules,
                             testSearchMissing,
                             testSearchFirst,
@@ -34,6 +35,17 @@ main = do
                             testSearchModuleOverflow,
                             testSearchModuleDuplicate,
                             testSearchModuleEmptyModule,
+                            testStudentOverlapIdentical,
+                            testStudentOverlapRepeat,
+                            testStudentOverlapSimilarFirstName,
+                            testStudentOverlapSimilarSecondName,
+                            testStudentOverlapSimilarBothNames,
+                            testStudentOverlapSimilarAge,
+                            testStudentOverlapDifferent,
+                            testModuleOverlapIdentical,
+                            testModuleOverlapRepeat,
+                            testModuleOverlapSimilar,
+                            testModuleOverlapDifferent,
                             testCheckEnrolledMissing,
                             testCheckEnrolledExistant,
                             testCheckEnrolledEmpty,
@@ -58,6 +70,13 @@ testSecondName = TestCase $ do
         expected = "Shaw"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
+
+testAge :: Test
+testAge = TestCase $ do
+    let input = exampleRealStudet
+        expected = 20
+    let actual = getAge input
+    assertEqual "checks if getting a student's age works as expected" expected actual
 
 testEnrolledModules :: Test
 testEnrolledModules = TestCase $ do
@@ -283,6 +302,98 @@ testSearchModuleEmptyModule = TestCase $ do
         expected = False
     let actual = searchModules input1 input2
     assertEqual "search for a module without providing any modules" expected actual
+
+-- OVERLAP TESTING STUDENT --
+
+testStudentOverlapIdentical :: Test
+testStudentOverlapIdentical = TestCase $ do
+    let input1 = exampleRealStudet
+        input2 = exampleStudentFile
+        expected = True
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if an exact copy of a student is identified as a copy" expected actual
+
+testStudentOverlapRepeat :: Test
+testStudentOverlapRepeat = TestCase $ do
+    let input1 = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = True
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if a repeat with critical data a student is identified as a copy" expected actual
+
+testStudentOverlapSimilarFirstName :: Test
+testStudentOverlapSimilarFirstName = TestCase $ do
+    let input1 = (Student {firstName = "Reuben", secondName = "Hall", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = False
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if a repeat student with the same first name but different age and second name is identified as a copy" expected actual
+
+testStudentOverlapSimilarSecondName :: Test
+testStudentOverlapSimilarSecondName = TestCase $ do
+    let input1 = (Student {firstName = "Lucas", secondName = "Shaw", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = False
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if a repeat student with the same second name but different age and first name is identified as a copy" expected actual
+
+testStudentOverlapSimilarBothNames :: Test
+testStudentOverlapSimilarBothNames = TestCase $ do
+    let input1 = (Student {firstName = "Reuben", secondName = "Shaw", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = False
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if a repeat student with the same name but different age is identified as a copy" expected actual
+
+testStudentOverlapSimilarAge :: Test
+testStudentOverlapSimilarAge = TestCase $ do
+    let input1 = (Student {firstName = "Lucas", secondName = "Hall", age = 20, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = False
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if a repeat student with the same age but different name is identified as a copy" expected actual
+
+testStudentOverlapDifferent :: Test
+testStudentOverlapDifferent = TestCase $ do
+    let input1 = (Student {firstName = "Robert", secondName = "Daniels", age = 38, year = 3, modules = ["BS2202", "BS2002"]})
+        input2 = exampleStudentFile
+        expected = False
+    let actual = checkStudentOverlap input1 input2
+    assertEqual "test to see if an entirely unique student is identified as a copy" expected actual
+
+-- MODULE OVERLAP TESTING --
+
+testModuleOverlapIdentical :: Test
+testModuleOverlapIdentical = TestCase $ do
+    let input1 = exampleRealModule
+        input2 = exampleModuleFile
+        expected = True
+    let actual = checkModuleOverlap input1 input2
+    assertEqual "test to see if an exact copy of a module is identified as a copy" expected actual
+
+testModuleOverlapRepeat :: Test
+testModuleOverlapRepeat = TestCase $ do
+    let input1 = (Module {code = "BS2220", name = "Not Functional Programming"})
+        input2 = exampleModuleFile
+        expected = True
+    let actual = checkModuleOverlap input1 input2
+    assertEqual "test to see if a module with repeated critical data is identified as a copy" expected actual
+
+testModuleOverlapSimilar :: Test
+testModuleOverlapSimilar = TestCase $ do
+    let input1 = (Module {code = "BS2223", name = "Functional Programming"})
+        input2 = exampleModuleFile
+        expected = False
+    let actual = checkModuleOverlap input1 input2
+    assertEqual "test to see if a module with a unique code but repeated name is identified as a copy" expected actual
+
+testModuleOverlapDifferent :: Test
+testModuleOverlapDifferent = TestCase $ do
+    let input1 = (Module {code = "BS2223", name = "Not Functional Programming"})
+        input2 = exampleModuleFile
+        expected = False
+    let actual = checkModuleOverlap input1 input2
+    assertEqual "test to see if an entirely unique module is identified as a copy" expected actual
 
 -- CHECK ENROLLED TESTING --
 
