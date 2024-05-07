@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric, DeriveAnyClass #-}
 
-module Lib
+module StudentDir
     (Student(..)
     ,Module(..)
     ,jsonFileStudent

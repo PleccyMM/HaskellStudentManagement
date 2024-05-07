@@ -9,9 +9,10 @@ module Main (main
             ,changeYear
             ,printStudentInfo
             ,printModuleInfo
+            ,help
             ) where
 
-import Lib
+import StudentDir
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as B
 import Data.Text hiding (map)
@@ -118,5 +119,15 @@ printModuleInfo s = do
                             where c = checkEnrolled st mc
     hClose inputHandle
 
+help :: IO ()
+help = putStrLn ("\nsearchStudents :: String -> IO ()" ++
+                "\naddStudent :: IO ()" ++
+                "\ndeleteStudent :: [String] -> Int -> IO ()" ++ 
+                "\naddModule :: IO ()" ++
+                "\ndeleteModule :: String -> IO ()" ++
+                "\nchangeYear :: Int -> [String] -> Int -> IO ()" ++
+                "\nprintStudentInfo :: IO ()" ++
+                "\nprintModuleInfo :: String -> IO ()\n")
+
 main :: IO ()
-main = putStrLn "Welcome to the student management system!"
+main = putStrLn "Welcome to the student directory system! Type \"help\" to see commands"

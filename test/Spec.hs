@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Test.HUnit
-import Lib
+import StudentDir
 import Data.Text hiding (map)
 
 main :: IO ()
