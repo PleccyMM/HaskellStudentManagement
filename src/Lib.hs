@@ -222,7 +222,8 @@ searchModules (x:xs) m = if checkModules m x then searchModules xs m else False
 
 checkModules :: [Module] -> Text -> Bool
 checkModules [] _ = False
-checkModules (x:xs) t = if t == getCode x then True else checkModules xs t 
+checkModules (x:xs) t = if l t == l (getCode x) then True else checkModules xs t 
+    where l = Data.Text.toLower
 
 getCode :: Module -> Text
 getCode (Module { code = c }) = c

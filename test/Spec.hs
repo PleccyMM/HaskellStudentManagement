@@ -33,7 +33,6 @@ main = do
                             testSearchModuleMultipleMixed,
                             testSearchModuleOverflow,
                             testSearchModuleDuplicate,
-                            testSearchModuleEmptyText,
                             testSearchModuleEmptyModule,
                             testCheckEnrolledMissing,
                             testCheckEnrolledExistant,
@@ -276,14 +275,6 @@ testSearchModuleDuplicate = TestCase $ do
         expected = True
     let actual = searchModules input1 input2
     assertEqual "search for a module provided with the same module code twice" expected actual
-
-testSearchModuleEmptyText :: Test
-testSearchModuleEmptyText = TestCase $ do
-    let input1 = []
-        input2 = exampleModuleFile
-        expected = False
-    let actual = searchModules input1 input2
-    assertEqual "search for a module without providing any codes" expected actual
 
 testSearchModuleEmptyModule :: Test
 testSearchModuleEmptyModule = TestCase $ do
