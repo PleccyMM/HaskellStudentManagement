@@ -3,7 +3,9 @@
 module Main (main
             ,searchStudents
             ,addStudent
+            ,deleteStudent
             ,addModule
+            ,deleteModule
             ,printStudentInfo
             ,printModuleInfo
             ) where
@@ -11,7 +13,7 @@ module Main (main
 import Lib
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as B
-import Data.Text
+import Data.Text hiding (map)
 import System.IO
 
 searchStudents :: String -> IO ()
@@ -29,6 +31,19 @@ addStudent = do
                 let updatedStudents = s : students
                 B.writeFile jsonFileStudent (encode updatedStudents)
 
+deleteStudent :: [String] -> Int -> IO ()
+deleteStudent i a = do
+    d <- getAllStudents
+    case d of
+        Left err -> putStrLn err
+        Right st -> do
+            let d' = findSpecificStudent st (map pack i) a
+            case d' of
+                Nothing -> putStrLn "Couldn't find student"
+                Just s -> do
+                    let updatedStudents = remove s st
+                    B.writeFile jsonFileStudent (encode updatedStudents)
+    
 addModule :: IO ()
 addModule = do
         d <- getAllModules
@@ -38,6 +53,19 @@ addModule = do
                 m <- getModuleDetails
                 let updatedModules = m : mods
                 B.writeFile jsonFileModule (encode updatedModules)
+
+deleteModule :: String -> IO ()
+deleteModule i = do
+    d <- getAllModules
+    case d of
+        Left err -> putStrLn err
+        Right mods -> do
+            let d' = findCode mods (pack i)
+            case d' of
+                Nothing -> putStrLn "Couldn't find module"
+                Just m -> do
+                    let updatedModules = remove m mods
+                    B.writeFile jsonFileModule (encode updatedModules)
 
 printStudentInfo :: IO ()
 printStudentInfo = do

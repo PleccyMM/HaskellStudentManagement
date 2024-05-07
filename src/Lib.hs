@@ -14,9 +14,12 @@ module Lib
     ,checkTextStudent
     ,getFirstName
     ,getSecondName
+    ,getAge
     ,getStudentDetails
     ,getNumber
     ,isInt
+    ,findSpecificStudent
+    ,remove
     ,getModuleDetails
     ,getModules
     ,searchModules
@@ -33,7 +36,7 @@ module Lib
 import Data.Aeson (ToJSON, FromJSON, eitherDecode)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text hiding (length, filter, map, unwords, elem)
+import Data.Text hiding (length, filter, map, unwords, elem, head, last)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
@@ -111,6 +114,9 @@ getFirstName (Student { firstName = f }) = f
 getSecondName :: Student -> Text
 getSecondName (Student { secondName = s }) = s
 
+getAge :: Student -> Int
+getAge (Student { age = a }) = a
+
 -- ADDING STUDENTS --
 
 getStudentDetails :: IO Student
@@ -135,6 +141,20 @@ getNumber s = do
 isInt :: String -> Bool
 isInt "" = True
 isInt (x:xs) = if isDigit x then isInt xs else False
+
+-- DELETING STUDENTS --
+
+findSpecificStudent :: [Student] -> [Text] -> Int -> Maybe Student
+findSpecificStudent [] _ _ = Nothing
+findSpecificStudent (x:xs) t a = if l (getFirstName x) == l (head t) && l (getSecondName x) == l (last t) && getAge x == a 
+                                    then Just x 
+                                    else findSpecificStudent xs t a
+                                        where l = Data.Text.toLower
+
+remove :: Eq a => a -> [a] -> [a]
+remove _ [] = []
+remove i (x:xs) = if i == x then c else x : c
+    where c = remove i xs
 
 -- ADDING MODULES --
 
