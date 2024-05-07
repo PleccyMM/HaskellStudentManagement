@@ -34,7 +34,7 @@ import Data.Aeson (ToJSON, FromJSON, eitherDecode, encode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text hiding (length, filter)
+import Data.Text hiding (length, filter, map, unwords, putStrLn, getLine, elem)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
@@ -105,7 +105,7 @@ checkTextStudent (x:xs) t =
         else if t' == Data.Text.toLower (getSecondName x) 
             then Just x 
             else checkTextStudent xs t 
-        where t' = (pack $ Prelude.map Data.Char.toLower t)
+        where t' = (pack $ map Data.Char.toLower t)
 
 getFirstName :: Student -> Text
 getFirstName (Student { firstName = f }) = f
@@ -117,9 +117,9 @@ getSecondName (Student { secondName = s }) = s
 
 getStudentDetails :: IO Student
 getStudentDetails = do
-    Prelude.putStrLn "First Name:"
+    putStrLn "First Name:"
     firstName <- I.getLine
-    Prelude.putStrLn "Second Name:"
+    putStrLn "Second Name:"
     secondName <- I.getLine
     age <- getNumber "Age:"
     year <- getNumber "Year of Study:"
@@ -128,10 +128,10 @@ getStudentDetails = do
 
 getNumber :: String -> IO Int
 getNumber s = do
-    Prelude.putStrLn s
-    n <- Prelude.getLine
+    putStrLn s
+    n <- getLine
     if isInt n then return (read n) else do
-        Prelude.putStrLn("Incorrect Format")
+        putStrLn("Incorrect Format")
         getNumber s
 
 isInt :: String -> Bool
@@ -142,16 +142,16 @@ isInt (x:xs) = if isDigit x then isInt xs else False
 
 getModuleDetails :: IO Module
 getModuleDetails = do
-    Prelude.putStrLn "Module Code:"
+    putStrLn "Module Code:"
     code <- I.getLine
-    Prelude.putStrLn "Name:"
+    putStrLn "Name:"
     name <- I.getLine
     return Module { code = code, name = name }
 
 getModules :: IO [Text]
 getModules = do
-    Prelude.putStrLn "Modules (seperate with commas):"
-    modulesInput <- Prelude.getLine
+    putStrLn "Modules (seperate with commas):"
+    modulesInput <- getLine
     let modules = splitOn "," (pack modulesInput)
     allModulesEither <- getAllModules
     case allModulesEither of
@@ -160,7 +160,7 @@ getModules = do
             getModules
         Right allModules -> do
             if searchModules modules allModules then return modules else do
-                Prelude.putStrLn("Didn't Find Module")
+                putStrLn("Didn't Find Module")
                 getModules
 
 -- MODULE DETAILS --
@@ -184,7 +184,7 @@ findCode (x:xs) t = if getCode x == t then Just x else findCode xs t
 
 checkEnrolled :: [Student] -> Module -> String
 checkEnrolled [] _ = ""
-checkEnrolled (x:xs) m = if Prelude.elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
+checkEnrolled (x:xs) m = if elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
     where c = checkEnrolled xs m
 
 getStudentModules :: Student -> [Text]
@@ -200,4 +200,4 @@ convertAllStudents [] = ""
 convertAllStudents (x:xs) = studentToString x ++ convertAllStudents xs
 
 studentToString :: Student -> String
-studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ Prelude.unwords (Prelude.map unpack m) ++ "\n\n"
+studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ unwords (map unpack m) ++ "\n\n"
