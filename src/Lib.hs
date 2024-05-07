@@ -16,11 +16,11 @@ module Lib
     ,getSecondName
     ,getStudentDetails
     ,getNumber
-    ,isNumber'
+    ,isInt
     ,getModuleDetails
     ,getModules
+    ,searchModules
     ,checkModules
-    ,checkTextModule
     ,getCode
     ,convertAllStudents
     ,studentToString
@@ -42,12 +42,12 @@ data Student = Student {
     age :: Int,
     year :: Int,
     modules :: [Text]
-} deriving (Show, Generic, ToJSON, FromJSON)
+} deriving (Show, Generic, ToJSON, FromJSON, Eq)
 
 data Module = Module {
     code :: !Text,
     name :: !Text
-} deriving (Show, Generic, ToJSON, FromJSON)
+} deriving (Show, Generic, ToJSON, FromJSON, Eq)
 
 jsonFileStudent :: FilePath
 jsonFileStudent = "students.json"
@@ -85,16 +85,17 @@ findStudents t = do
     d <- getAllStudents
     return $ case d of
         Left err -> Nothing
-        Right s -> checkTextStudent s (pack $ Prelude.map Data.Char.toLower t)
+        Right s -> checkTextStudent s t
 
-checkTextStudent :: [Student] -> Text -> Maybe Student
+checkTextStudent :: [Student] -> String -> Maybe Student
 checkTextStudent [] _ = Nothing
 checkTextStudent (x:xs) t = 
-    if t == getFirstName x 
+    if t' == getFirstName x 
         then Just x 
-        else if t == getSecondName x 
+        else if t' == getSecondName x 
             then Just x 
             else checkTextStudent xs t 
+        where t' = (pack $ Prelude.map Data.Char.toLower t)
 
 getFirstName :: Student -> Text
 getFirstName (Student { firstName = f }) = Data.Text.toLower f
@@ -117,13 +118,13 @@ getNumber :: String -> IO Int
 getNumber s = do
     Prelude.putStrLn s
     n <- Prelude.getLine
-    if isNumber' n then return (read n) else do
+    if isInt n then return (read n) else do
         Prelude.putStrLn("Incorrect Format")
         getNumber s
 
-isNumber' :: String -> Bool
-isNumber' "" = True
-isNumber' (x:xs) = if isDigit x then isNumber' xs else False
+isInt :: String -> Bool
+isInt "" = True
+isInt (x:xs) = if isDigit x then isInt xs else False
 
 getModuleDetails :: IO Module
 getModuleDetails = do
@@ -144,17 +145,17 @@ getModules = do
             putStrLn $ "Error fetching modules: " ++ err
             getModules
         Right allModules -> do
-            if checkModules modules allModules then return modules else do
+            if searchModules modules allModules then return modules else do
                 Prelude.putStrLn("Didn't Find Module")
                 getModules
 
-checkModules :: [Text] -> [Module] -> Bool
-checkModules [] _ = True
-checkModules (x:xs) m = if checkTextModule m x then checkModules xs m else False
+searchModules :: [Text] -> [Module] -> Bool
+searchModules [] _ = True
+searchModules (x:xs) m = if checkModules m x then searchModules xs m else False
 
-checkTextModule :: [Module] -> Text -> Bool
-checkTextModule [] _ = False
-checkTextModule (x:xs) t = if t == getCode x then True else checkTextModule xs t 
+checkModules :: [Module] -> Text -> Bool
+checkModules [] _ = False
+checkModules (x:xs) t = if t == getCode x then True else checkModules xs t 
 
 getCode :: Module -> Text
 getCode (Module { code = c }) = c
