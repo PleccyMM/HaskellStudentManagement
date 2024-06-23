@@ -13,10 +13,11 @@ module Main (main
             ) where
 
 import StudentDir
-import Data.Aeson (encode)
+import Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy as B
 import Data.Text hiding (map)
 import System.IO
+import System.Environment (getArgs)
 
 searchStudents :: String -> IO ()
 searchStudents s = do 
@@ -34,7 +35,7 @@ addStudent = do
                 s <- getStudentDetails
                 if checkStudentOverlap s st then putStrLn "Duplicate student" else do
                     let updatedStudents = s : st
-                    B.writeFile jsonFileStudent (encode updatedStudents)
+                    B.writeFile jsonFileStudent (encodePretty updatedStudents)
 
 deleteStudent :: [String] -> Int -> IO ()
 deleteStudent i a = do
@@ -47,7 +48,7 @@ deleteStudent i a = do
                 Nothing -> putStrLn "Couldn't find student"
                 Just s -> do
                     let updatedStudents = remove s st
-                    B.writeFile jsonFileStudent (encode updatedStudents)
+                    B.writeFile jsonFileStudent (encodePretty updatedStudents)
     
 addModule :: IO ()
 addModule = do
@@ -58,7 +59,7 @@ addModule = do
                 m <- getModuleDetails
                 if checkModuleOverlap m mods then putStrLn "Duplicate module" else do
                     let updatedModules = m : mods
-                    B.writeFile jsonFileModule (encode updatedModules)
+                    B.writeFile jsonFileModule (encodePretty updatedModules)
 
 deleteModule :: String -> IO ()
 deleteModule i = do
@@ -76,8 +77,8 @@ deleteModule i = do
                         Right st -> do
                             let updatedStudents = clearModuleFromStudents (pack i) st
                             let updatedModules = remove m mods
-                            B.writeFile jsonFileStudent (encode updatedStudents)
-                            B.writeFile jsonFileModule (encode updatedModules)
+                            B.writeFile jsonFileStudent (encodePretty updatedStudents)
+                            B.writeFile jsonFileModule (encodePretty updatedModules)
 
 changeYear :: Int -> [String] -> Int -> IO ()
 changeYear y i a = do
@@ -90,7 +91,7 @@ changeYear y i a = do
                 Nothing -> putStrLn "Couldn't find student"
                 Just s -> do
                     let updatedStudents = remove s st ++ [increaseYear s y]
-                    B.writeFile jsonFileStudent (encode updatedStudents)
+                    B.writeFile jsonFileStudent (encodePretty updatedStudents)
 
 printStudentInfo :: IO ()
 printStudentInfo = do
@@ -120,14 +121,26 @@ printModuleInfo s = do
     hClose inputHandle
 
 help :: IO ()
-help = putStrLn ("\nsearchStudents :: String -> IO ()" ++
-                "\naddStudent :: IO ()" ++
-                "\ndeleteStudent :: [String] -> Int -> IO ()" ++ 
-                "\naddModule :: IO ()" ++
-                "\ndeleteModule :: String -> IO ()" ++
-                "\nchangeYear :: Int -> [String] -> Int -> IO ()" ++
-                "\nprintStudentInfo :: IO ()" ++
-                "\nprintModuleInfo :: String -> IO ()\n")
+help = putStrLn ("\nsearchStudents <first or last name>" ++
+                "\naddStudent" ++
+                "\ndeleteStudent <first name> <last name> <year>" ++ 
+                "\naddModule" ++
+                "\ndeleteModule <code>" ++
+                "\nchangeYear <year> <first name> <last name> <current year>" ++
+                "\nprintStudentInfo" ++
+                "\nprintModuleInfo <code>\n")
 
 main :: IO ()
-main = putStrLn "Welcome to the student directory system! Type \"help\" to see commands"
+main = do
+    args <- getArgs
+    case args of
+        ("searchStudents":name:_) -> searchStudents name
+        ("addStudent":_) -> addStudent
+        ("deleteStudent":firstName:lastName:year:_) -> deleteStudent [firstName, lastName] (read year)
+        ("addModule":_) -> addModule
+        ("deleteModule":code:_) -> deleteModule code
+        ("changeYear":year:firstName:lastName:currentYear:_) -> changeYear (read year) [firstName, lastName] (read currentYear)
+        ("printStudentInfo":_) -> printStudentInfo
+        ("printModuleInfo":code:_) -> printModuleInfo code
+        ("help":_) -> help
+        _ -> putStrLn "Invalid command. Type \"help\" to see available commands."

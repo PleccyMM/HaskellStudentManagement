@@ -1,65 +1,69 @@
-{-# LANGUAGE OverloadedStrings, DeriveGeneric, DeriveAnyClass #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module StudentDir
-    (Student(..)
-    ,Module(..)
-    ,jsonFileStudent
-    ,getJSONStudent
-    ,jsonFileModule
-    ,getJSONModule
-    ,fileCheck
-    ,getAllStudents
-    ,getAllModules
-    ,findStudents
-    ,checkTextStudent
-    ,getFirstName
-    ,getSecondName
-    ,getAge
-    ,getStudentDetails
-    ,getNumber
-    ,isInt
-    ,checkStudentOverlap
-    ,findSpecificStudent
-    ,clearModuleFromStudents
-    ,setStudentModules
-    ,remove
-    ,increaseYear
-    ,getModuleDetails
-    ,getModules
-    ,checkModuleOverlap
-    ,searchModules
-    ,checkModules
-    ,getCode
-    ,findCode
-    ,checkEnrolled
-    ,getStudentModules
-    ,countNumberOfLines
-    ,convertAllStudents
-    ,studentToString
-    ) where
+module StudentDir (
+    Student (..),
+    Module (..),
+    jsonFileStudent,
+    getJSONStudent,
+    jsonFileModule,
+    getJSONModule,
+    fileCheck,
+    getAllStudents,
+    getAllModules,
+    findStudents,
+    checkTextStudent,
+    getFirstName,
+    getSecondName,
+    getAge,
+    getStudentDetails,
+    getNumber,
+    isInt,
+    checkStudentOverlap,
+    findSpecificStudent,
+    clearModuleFromStudents,
+    setStudentModules,
+    remove,
+    increaseYear,
+    getModuleDetails,
+    getModules,
+    checkModuleOverlap,
+    searchModules,
+    checkModules,
+    getCode,
+    findCode,
+    checkEnrolled,
+    getStudentModules,
+    countNumberOfLines,
+    convertAllStudents,
+    studentToString,
+) where
 
-import Data.Aeson (ToJSON, FromJSON, eitherDecode)
+import Data.Aeson (FromJSON, ToJSON, eitherDecode)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text hiding (length, filter, map, unwords, elem, head, last)
+import Data.Text hiding (elem, filter, head, last, length, map, unwords)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
 
 -- TYPES --
 
-data Student = Student {
-    firstName :: !Text,
-    secondName :: !Text,
-    age :: Int,
-    year :: Int,
-    modules :: [Text]
-} deriving (Show, Generic, ToJSON, FromJSON, Eq)
+data Student = Student
+    { firstName :: !Text
+    , secondName :: !Text
+    , age :: Int
+    , year :: Int
+    , modules :: [Text]
+    }
+    deriving (Show, Generic, ToJSON, FromJSON, Eq)
 
-data Module = Module {
-    code :: !Text,
-    name :: !Text
-} deriving (Show, Generic, ToJSON, FromJSON, Eq)
+data Module = Module
+    { code :: !Text
+    , name :: !Text
+    }
+    deriving (Show, Generic, ToJSON, FromJSON, Eq)
 
 -- FILE LOADING --
 
@@ -83,13 +87,13 @@ fileCheck :: FilePath -> IO FilePath
 fileCheck x = do
     fileExist <- doesFileExist x
     if not fileExist
-    then do
+        then do
             writeFile x "[]"
             return x
         else return x
 
 getAllStudents :: IO (Either String [Student])
-getAllStudents = (eitherDecode <$> getJSONStudent) 
+getAllStudents = (eitherDecode <$> getJSONStudent)
 
 getAllModules :: IO (Either String [Module])
 getAllModules = (eitherDecode <$> getJSONModule)
@@ -105,28 +109,28 @@ findStudents t = do
 
 checkTextStudent :: [Student] -> String -> [Student]
 checkTextStudent [] _ = []
-checkTextStudent (x:xs) t
+checkTextStudent (x : xs) t
     | t' == l (getFirstName x) = x : c
     | t' == l (getSecondName x) = x : c
     | otherwise = c
-    where
-        l = Data.Text.toLower
-        t' = pack $ map Data.Char.toLower t
-        c = checkTextStudent xs t
+  where
+    l = Data.Text.toLower
+    t' = pack $ map Data.Char.toLower t
+    c = checkTextStudent xs t
 
 -- STUDENT DETAILS --
 
 getFirstName :: Student -> Text
-getFirstName (Student { firstName = f }) = f
+getFirstName (Student{firstName = f}) = f
 
 getSecondName :: Student -> Text
-getSecondName (Student { secondName = s }) = s
+getSecondName (Student{secondName = s}) = s
 
 getAge :: Student -> Int
-getAge (Student { age = a }) = a
+getAge (Student{age = a}) = a
 
 getStudentModules :: Student -> [Text]
-getStudentModules (Student { modules = t }) = t
+getStudentModules (Student{modules = t}) = t
 
 -- ADDING STUDENTS --
 
@@ -139,51 +143,56 @@ getStudentDetails = do
     a <- getNumber "Age:"
     y <- getNumber "Year of Study:"
     m <- getModules
-    return Student { firstName = f, secondName = s, age = a, year = y, modules = m }
+    return Student{firstName = f, secondName = s, age = a, year = y, modules = m}
 
 getNumber :: String -> IO Int
 getNumber s = do
     putStrLn s
     n <- getLine
-    if isInt n then return (read n) else do
-        putStrLn("Incorrect Format")
-        getNumber s
+    if isInt n
+        then return (read n)
+        else do
+            putStrLn ("Incorrect Format")
+            getNumber s
 
 isInt :: String -> Bool
 isInt "" = True
-isInt (x:xs) = if isDigit x then isInt xs else False
+isInt (x : xs) = if isDigit x then isInt xs else False
 
 checkStudentOverlap :: Student -> [Student] -> Bool
-checkStudentOverlap (Student { firstName = f, secondName = s, age = a }) st = case (findSpecificStudent st [f,s] a) of 
-                                                                                Nothing -> False 
-                                                                                Just _ -> True
+checkStudentOverlap (Student{firstName = f, secondName = s, age = a}) st = case (findSpecificStudent st [f, s] a) of
+    Nothing -> False
+    Just _ -> True
 
 -- DELETING FROM FILES --
 
 findSpecificStudent :: [Student] -> [Text] -> Int -> Maybe Student
 findSpecificStudent _ [] _ = Nothing
 findSpecificStudent [] _ _ = Nothing
-findSpecificStudent (x:xs) t a = if l (getFirstName x) == l (head t) && l (getSecondName x) == l (last t) && getAge x == a 
-                                    then Just x 
-                                    else findSpecificStudent xs t a
-                                        where l = Data.Text.toLower
+findSpecificStudent (x : xs) t a =
+    if l (getFirstName x) == l (head t) && l (getSecondName x) == l (last t) && getAge x == a
+        then Just x
+        else findSpecificStudent xs t a
+  where
+    l = Data.Text.toLower
 
 clearModuleFromStudents :: Text -> [Student] -> [Student]
 clearModuleFromStudents _ [] = []
-clearModuleFromStudents m (x:xs) = setStudentModules (remove m (getStudentModules x)) x : clearModuleFromStudents m xs
+clearModuleFromStudents m (x : xs) = setStudentModules (remove m (getStudentModules x)) x : clearModuleFromStudents m xs
 
 setStudentModules :: [Text] -> Student -> Student
-setStudentModules m s = s { modules = m} 
+setStudentModules m s = s{modules = m}
 
-remove :: Eq a => a -> [a] -> [a]
+remove :: (Eq a) => a -> [a] -> [a]
 remove _ [] = []
-remove i (x:xs) = if i == x then c else x : c
-    where c = remove i xs
+remove i (x : xs) = if i == x then c else x : c
+  where
+    c = remove i xs
 
 -- INCREASE YEAR OF STUDY --
 
 increaseYear :: Student -> Int -> Student
-increaseYear s i = s { year = i }
+increaseYear s i = s{year = i}
 
 -- ADDING MODULES --
 
@@ -193,7 +202,7 @@ getModuleDetails = do
     c <- I.getLine
     putStrLn "Name:"
     n <- I.getLine
-    return Module { code = c, name = n }
+    return Module{code = c, name = n}
 
 getModules :: IO [Text]
 getModules = do
@@ -206,48 +215,62 @@ getModules = do
             putStrLn $ "Error fetching modules: " ++ err
             getModules
         Right allModules -> do
-            if searchModules m allModules then return m else do
-                putStrLn("Didn't Find Module")
-                getModules
+            if searchModules m allModules
+                then return m
+                else do
+                    putStrLn ("Didn't Find Module")
+                    getModules
 
 checkModuleOverlap :: Module -> [Module] -> Bool
-checkModuleOverlap (Module { code = c }) m = case (findCode m c) of 
-                                                Nothing -> False 
-                                                Just _ -> True
+checkModuleOverlap (Module{code = c}) m = case (findCode m c) of
+    Nothing -> False
+    Just _ -> True
 
 -- MODULE DETAILS --
 
 searchModules :: [Text] -> [Module] -> Bool
 searchModules [] _ = True
-searchModules (x:xs) m = if checkModules m x then searchModules xs m else False
+searchModules (x : xs) m = if checkModules m x then searchModules xs m else False
 
 checkModules :: [Module] -> Text -> Bool
 checkModules [] _ = False
-checkModules (x:xs) t = if l t == l (getCode x) then True else checkModules xs t 
-    where l = Data.Text.toLower
+checkModules (x : xs) t = if l t == l (getCode x) then True else checkModules xs t
+  where
+    l = Data.Text.toLower
 
 getCode :: Module -> Text
-getCode (Module { code = c }) = c
+getCode (Module{code = c}) = c
 
 findCode :: [Module] -> Text -> Maybe Module
 findCode [] _ = Nothing
-findCode (x:xs) t = if getCode x == t then Just x else findCode xs t
+findCode (x : xs) t = if getCode x == t then Just x else findCode xs t
 
 -- ENROLLMENT PRINTING --
 
 checkEnrolled :: [Student] -> Module -> String
 checkEnrolled [] _ = ""
-checkEnrolled (x:xs) m = if elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
-    where c = checkEnrolled xs m
+checkEnrolled (x : xs) m = if elem (getCode m) (getStudentModules x) then unpack (getFirstName x) ++ " " ++ unpack (getSecondName x) ++ "\n" ++ c else c
+  where
+    c = checkEnrolled xs m
 
 countNumberOfLines :: String -> Int
-countNumberOfLines s = length $ filter (=='\n') s
+countNumberOfLines s = length $ filter (== '\n') s
 
 -- READABILITY PRINTING --
 
 convertAllStudents :: [Student] -> String
 convertAllStudents [] = ""
-convertAllStudents (x:xs) = "\n" ++ studentToString x ++ "\n" ++ convertAllStudents xs
+convertAllStudents (x : xs) = "\n" ++ studentToString x ++ "\n" ++ convertAllStudents xs
 
 studentToString :: Student -> String
-studentToString (Student { firstName = f, secondName = s, age = a, year = y, modules = m }) = "First Name: " ++ unpack f ++ "\nSecond Name: " ++ unpack s ++ "\nAge: " ++ show a ++ "\nYear of Study: " ++ show y ++ "\nModules: " ++ unwords (map unpack m)
+studentToString (Student{firstName = f, secondName = s, age = a, year = y, modules = m}) =
+    "First Name: "
+        ++ unpack f
+        ++ "\nSecond Name: "
+        ++ unpack s
+        ++ "\nAge: "
+        ++ show a
+        ++ "\nYear of Study: "
+        ++ show y
+        ++ "\nModules: "
+        ++ unwords (map unpack m)
