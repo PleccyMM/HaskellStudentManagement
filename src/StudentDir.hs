@@ -25,10 +25,8 @@ module StudentDir (
     setStudentModules,
     remove,
     increaseYear,
-    getModuleDetails,
+    constructModule,
     checkModuleExistance,
-    getModules,
-    checkModuleOverlap,
     searchModules,
     checkModules,
     getCode,
@@ -178,13 +176,8 @@ increaseYear s i = s{year = i}
 
 -- ADDING MODULES --
 
-getModuleDetails :: IO Module
-getModuleDetails = do
-    putStrLn "Module Code:"
-    c <- I.getLine
-    putStrLn "Name:"
-    n <- I.getLine
-    return Module{code = c, name = n}
+constructModule :: String -> String -> IO Module
+constructModule c n = do return $ Module (pack c) (pack n)
 
 checkModuleExistance :: [String] -> IO Bool
 checkModuleExistance m = do
@@ -198,28 +191,6 @@ checkModuleExistance m = do
                 then return True
                 else do
                     return False
-
-getModules :: IO [Text]
-getModules = do
-    putStrLn "Modules (seperate with commas):"
-    modulesInput <- getLine
-    let m = splitOn "," (pack modulesInput)
-    allModulesEither <- getAllModules
-    case allModulesEither of
-        Left err -> do
-            putStrLn $ "Error fetching modules: " ++ err
-            getModules
-        Right allModules -> do
-            if searchModules m allModules
-                then return m
-                else do
-                    putStrLn ("Didn't Find Module")
-                    getModules
-
-checkModuleOverlap :: Module -> [Module] -> Bool
-checkModuleOverlap (Module{code = c}) m = case (findCode m c) of
-    Nothing -> False
-    Just _ -> True
 
 -- MODULE DETAILS --
 

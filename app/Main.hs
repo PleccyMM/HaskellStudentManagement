@@ -58,14 +58,15 @@ deleteStudent i a = do
                     let updatedStudents = remove s st
                     B.writeFile jsonFileStudent (encodePretty updatedStudents)
     
-addModule :: IO ()
-addModule = do
+addModule :: String -> String -> IO ()
+addModule c n = do
         d <- getAllModules
         case d of
             Left err -> putStrLn err
             Right mods -> do
-                m <- getModuleDetails
-                if checkModuleOverlap m mods then putStrLn "Duplicate module" else do
+                moduleExist <- checkModuleExistance [c]
+                if moduleExist then putStrLn "Duplicate module" else do
+                    m <- constructModule c n
                     let updatedModules = m : mods
                     B.writeFile jsonFileModule (encodePretty updatedModules)
 
@@ -129,10 +130,10 @@ printModuleInfo s = do
     hClose inputHandle
 
 help :: IO ()
-help = putStrLn ("\nsearchStudents <first or last name>" ++
-                "\naddStudent" ++
-                "\ndeleteStudent <first name> <last name> <year>" ++ 
-                "\naddModule" ++
+help = putStrLn ("\nsearchStudents \"<first or last name>\"" ++
+                "\naddStudent \"<first name>\" \"<last name>\" <age> <year> \"<module codes seperate by space>\"" ++
+                "\ndeleteStudent \"<first name>\" \"<last name>\" <year>" ++ 
+                "\naddModule <code> \"<name>\"" ++
                 "\ndeleteModule <code>" ++
                 "\nchangeYear <year> <first name> <last name> <current year>" ++
                 "\nprintStudentInfo" ++
@@ -148,7 +149,7 @@ main = do
                 then addStudent firstName lastName (read age) (read year) modules
                 else putStrLn "Ensure that the age and year and entered correctly"
         ("deleteStudent":firstName:lastName:year:_) -> deleteStudent [firstName, lastName] (read year)
-        ("addModule":_) -> addModule
+        ("addModule":code:name:_) -> addModule code name
         ("deleteModule":code:_) -> deleteModule code
         ("changeYear":year:firstName:lastName:currentYear:_) -> changeYear (read year) [firstName, lastName] (read currentYear)
         ("printStudentInfo":_) -> printStudentInfo
