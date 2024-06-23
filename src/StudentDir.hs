@@ -17,8 +17,7 @@ module StudentDir (
     getFirstName,
     getSecondName,
     getAge,
-    getStudentDetails,
-    getNumber,
+    constructStudent,
     isInt,
     checkStudentOverlap,
     findSpecificStudent,
@@ -27,6 +26,7 @@ module StudentDir (
     remove,
     increaseYear,
     getModuleDetails,
+    checkModuleExistance,
     getModules,
     checkModuleOverlap,
     searchModules,
@@ -134,26 +134,8 @@ getStudentModules (Student{modules = t}) = t
 
 -- ADDING STUDENTS --
 
-getStudentDetails :: IO Student
-getStudentDetails = do
-    putStrLn "First Name:"
-    f <- I.getLine
-    putStrLn "Second Name:"
-    s <- I.getLine
-    a <- getNumber "Age:"
-    y <- getNumber "Year of Study:"
-    m <- getModules
-    return Student{firstName = f, secondName = s, age = a, year = y, modules = m}
-
-getNumber :: String -> IO Int
-getNumber s = do
-    putStrLn s
-    n <- getLine
-    if isInt n
-        then return (read n)
-        else do
-            putStrLn ("Incorrect Format")
-            getNumber s
+constructStudent :: String -> String -> Int -> Int -> [String] -> IO Student
+constructStudent fn ln a y m = do return $ Student (pack fn) (pack ln) a y (map pack m)
 
 isInt :: String -> Bool
 isInt "" = True
@@ -203,6 +185,19 @@ getModuleDetails = do
     putStrLn "Name:"
     n <- I.getLine
     return Module{code = c, name = n}
+
+checkModuleExistance :: [String] -> IO Bool
+checkModuleExistance m = do
+    mods <- getAllModules
+    case mods of
+        Left err -> do
+            putStrLn $ "Error fetching modules: " ++ err
+            return False
+        Right allModules -> do
+            if searchModules (map pack m) allModules
+                then return True
+                else do
+                    return False
 
 getModules :: IO [Text]
 getModules = do

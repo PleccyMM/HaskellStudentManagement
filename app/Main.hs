@@ -15,7 +15,7 @@ module Main (main
 import StudentDir
 import Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy as B
-import Data.Text hiding (map)
+import Data.Text hiding (map, words)
 import System.IO
 import System.Environment (getArgs)
 
@@ -26,16 +26,24 @@ searchStudents s = do
         Nothing -> putStrLn "Didn't find any students"
         Just st -> putStrLn $ convertAllStudents st
 
-addStudent :: IO ()
-addStudent = do
-        d <- getAllStudents
-        case d of
-            Left err -> putStrLn err
-            Right st -> do
-                s <- getStudentDetails
-                if checkStudentOverlap s st then putStrLn "Duplicate student" else do
-                    let updatedStudents = s : st
-                    B.writeFile jsonFileStudent (encodePretty updatedStudents)
+addStudent :: String -> String -> Int -> Int -> String -> IO ()
+addStudent fn ln a y m = do
+    d <- getAllStudents
+    case d of
+        Left err -> putStrLn err
+        Right st -> do
+            modulesExist <- checkModuleExistance (words m)
+            if modulesExist
+                then do
+                    s <- constructStudent fn ln a y (words m)
+                    if checkStudentOverlap s st
+                        then putStrLn "Duplicate student"
+                        else do
+                            let updatedStudents = s : st
+                            B.writeFile jsonFileStudent (encodePretty updatedStudents)
+                            putStrLn "Student added successfully."
+                else putStrLn "Didn't find all the module codes"
+                        
 
 deleteStudent :: [String] -> Int -> IO ()
 deleteStudent i a = do
@@ -135,7 +143,10 @@ main = do
     args <- getArgs
     case args of
         ("searchStudents":name:_) -> searchStudents name
-        ("addStudent":_) -> addStudent
+        ("addStudent":firstName:lastName:age:year:modules:_) -> 
+            if isInt age && isInt year
+                then addStudent firstName lastName (read age) (read year) modules
+                else putStrLn "Ensure that the age and year and entered correctly"
         ("deleteStudent":firstName:lastName:year:_) -> deleteStudent [firstName, lastName] (read year)
         ("addModule":_) -> addModule
         ("deleteModule":code:_) -> deleteModule code
