@@ -48,10 +48,6 @@ main = do
                             testStudentOverlapSimilarBothNames,
                             testStudentOverlapSimilarAge,
                             testStudentOverlapDifferent,
-                            -- testModuleOverlapIdentical,
-                            -- testModuleOverlapRepeat,
-                            -- testModuleOverlapSimilar,
-                            -- testModuleOverlapDifferent,
                             testCheckEnrolledMissing,
                             testCheckEnrolledExistant,
                             testCheckEnrolledEmpty,
@@ -72,14 +68,14 @@ main = do
 testFirstName :: Test
 testFirstName = TestCase $ do
     let input = exampleRealStudet
-        expected = "Reuben"
+        expected = "Daniel"
     let actual = getFirstName input
     assertEqual "checks if getting the first name works as expected" expected actual
 
 testSecondName :: Test
 testSecondName = TestCase $ do
     let input = exampleRealStudet
-        expected = "Shaw"
+        expected = "Blain"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
 
@@ -101,7 +97,7 @@ testSetStudentModules :: Test
 testSetStudentModules = TestCase $ do
     let input1 = ["MD0001", "MD0002"]
         input2 = exampleRealStudet
-        expected = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 2, modules = ["MD0001", "MD0002"]})
+        expected = (Student {firstName = "Daniel", secondName = "Blain", age = 20, year = 2, modules = ["MD0001", "MD0002"]})
     let actual = setStudentModules input1 input2
     assertEqual "checks if setting a student's enrolled modules works as expected" expected actual
 
@@ -109,7 +105,7 @@ testIncreaseYear :: Test
 testIncreaseYear = TestCase $ do
     let input1 = exampleRealStudet
         input2 = 3
-        expected = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 3, modules = ["BS2201","BS2202","BS2220","BS2221"]})
+        expected = (Student {firstName = "Daniel", secondName = "Blain", age = 20, year = 3, modules = ["BS2201","BS2202","BS2220","BS2221"]})
     let actual = increaseYear input1 input2
     assertEqual "checks if setting a student's year of study works as expected" expected actual
 
@@ -127,7 +123,7 @@ testSearchMissing = TestCase $ do
 testSearchFirst :: Test
 testSearchFirst = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = "Reuben"
+        input2 = "Daniel"
         expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students first name" expected actual
@@ -135,7 +131,7 @@ testSearchFirst = TestCase $ do
 testSearchSecond :: Test
 testSearchSecond = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = "Shaw"
+        input2 = "Blain"
         expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students second name" expected actual
@@ -143,7 +139,7 @@ testSearchSecond = TestCase $ do
 testSearchAllLower :: Test
 testSearchAllLower = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = "reuben"
+        input2 = "daniel"
         expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in lowercase" expected actual
@@ -151,7 +147,7 @@ testSearchAllLower = TestCase $ do
 testSearchAllCapital :: Test
 testSearchAllCapital = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = "REUBEN"
+        input2 = "DANIEL"
         expected = [exampleRealStudet]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in uppercase" expected actual
@@ -189,7 +185,7 @@ testSpecificSearchMissing = TestCase $ do
 testSpecificSearchExistant :: Test
 testSpecificSearchExistant = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = ["Reuben", "Shaw"]
+        input2 = ["Daniel", "Blain"]
         input3 = 20
         expected = Just exampleRealStudet
     let actual = findSpecificStudent input1 input2 input3
@@ -207,7 +203,7 @@ testSpecificSearchEmptyText = TestCase $ do
 testSpecificSearchExistantCase :: Test
 testSpecificSearchExistantCase = TestCase $ do
     let input1 = exampleStudentFile
-        input2 = ["REUBEN", "SHAW"]
+        input2 = ["DANIEL", "BLAIN"]
         input3 = 20
         expected = Just exampleRealStudet
     let actual = findSpecificStudent input1 input2 input3
@@ -381,7 +377,7 @@ testStudentOverlapIdentical = TestCase $ do
 
 testStudentOverlapRepeat :: Test
 testStudentOverlapRepeat = TestCase $ do
-    let input1 = (Student {firstName = "Reuben", secondName = "Shaw", age = 20, year = 3, modules = ["BS2202", "BS2002"]})
+    let input1 = (Student {firstName = "Daniel", secondName = "Blain", age = 20, year = 3, modules = ["BS2202", "BS2002"]})
         input2 = exampleStudentFile
         expected = True
     let actual = checkStudentOverlap input1 input2
@@ -389,7 +385,7 @@ testStudentOverlapRepeat = TestCase $ do
 
 testStudentOverlapSimilarFirstName :: Test
 testStudentOverlapSimilarFirstName = TestCase $ do
-    let input1 = (Student {firstName = "Reuben", secondName = "Hall", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+    let input1 = (Student {firstName = "Daniel", secondName = "Hall", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
         input2 = exampleStudentFile
         expected = False
     let actual = checkStudentOverlap input1 input2
@@ -397,7 +393,7 @@ testStudentOverlapSimilarFirstName = TestCase $ do
 
 testStudentOverlapSimilarSecondName :: Test
 testStudentOverlapSimilarSecondName = TestCase $ do
-    let input1 = (Student {firstName = "Lucas", secondName = "Shaw", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+    let input1 = (Student {firstName = "Lucas", secondName = "Blain", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
         input2 = exampleStudentFile
         expected = False
     let actual = checkStudentOverlap input1 input2
@@ -405,7 +401,7 @@ testStudentOverlapSimilarSecondName = TestCase $ do
 
 testStudentOverlapSimilarBothNames :: Test
 testStudentOverlapSimilarBothNames = TestCase $ do
-    let input1 = (Student {firstName = "Reuben", secondName = "Shaw", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
+    let input1 = (Student {firstName = "Daniel", secondName = "Blain", age = 24, year = 3, modules = ["BS2202", "BS2002"]})
         input2 = exampleStudentFile
         expected = False
     let actual = checkStudentOverlap input1 input2
@@ -427,40 +423,6 @@ testStudentOverlapDifferent = TestCase $ do
     let actual = checkStudentOverlap input1 input2
     assertEqual "test to see if an entirely unique student is identified as a copy" expected actual
 
--- -- MODULE OVERLAP TESTING --
-
--- testModuleOverlapIdentical :: Test
--- testModuleOverlapIdentical = TestCase $ do
---     let input1 = exampleRealModule
---         input2 = exampleModuleFile
---         expected = True
---     let actual = checkModuleOverlap input1 input2
---     assertEqual "test to see if an exact copy of a module is identified as a copy" expected actual
-
--- testModuleOverlapRepeat :: Test
--- testModuleOverlapRepeat = TestCase $ do
---     let input1 = (Module {code = "BS2220", name = "Not Functional Programming"})
---         input2 = exampleModuleFile
---         expected = True
---     let actual = checkModuleOverlap input1 input2
---     assertEqual "test to see if a module with repeated critical data is identified as a copy" expected actual
-
--- testModuleOverlapSimilar :: Test
--- testModuleOverlapSimilar = TestCase $ do
---     let input1 = (Module {code = "BS2223", name = "Functional Programming"})
---         input2 = exampleModuleFile
---         expected = False
---     let actual = checkModuleOverlap input1 input2
---     assertEqual "test to see if a module with a unique code but repeated name is identified as a copy" expected actual
-
--- testModuleOverlapDifferent :: Test
--- testModuleOverlapDifferent = TestCase $ do
---     let input1 = (Module {code = "BS2223", name = "Not Functional Programming"})
---         input2 = exampleModuleFile
---         expected = False
---     let actual = checkModuleOverlap input1 input2
---     assertEqual "test to see if an entirely unique module is identified as a copy" expected actual
-
 -- CHECK ENROLLED TESTING --
 
 testCheckEnrolledMissing :: Test
@@ -475,7 +437,7 @@ testCheckEnrolledExistant :: Test
 testCheckEnrolledExistant = TestCase $ do
     let input1 = exampleStudentFile
         input2 = exampleRealModule
-        expected = "Reuben Shaw\nVanessa Thompson\n"
+        expected = "Daniel Blain\nVanessa Thompson\n"
     let actual = checkEnrolled input1 input2
     assertEqual "tests getting all student names who are enrolled on a specific module" expected actual
 
@@ -502,8 +464,8 @@ testClearModuleExistant = TestCase $ do
     let input1 = pack "BS2220"
         input2 = exampleStudentFile
         expected = [(Student { 
-            firstName = "Reuben", 
-            secondName = "Shaw", 
+            firstName = "Daniel", 
+            secondName = "Blain", 
             age = 20, 
             year = 2, 
             modules = ["BS2201","BS2202","BS2221"] }),
@@ -557,14 +519,14 @@ testLineCountMany = TestCase $ do
 testStudentToString :: Test
 testStudentToString = TestCase $ do
     let input = exampleRealStudet
-        expected = "First Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221"
+        expected = "First Name: Daniel\nSecond Name: Blain\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221"
     let actual = studentToString input
     assertEqual "tests conversion from student type to readable string" expected actual
 
 testMultipleStudentToString :: Test
 testMultipleStudentToString = TestCase $ do
     let input = exampleStudentFile
-        expected = "\nFirst Name: Reuben\nSecond Name: Shaw\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n" ++
+        expected = "\nFirst Name: Daniel\nSecond Name: Blain\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221\n\n" ++
                     "First Name: Amy\nSecond Name: Lovegood\nAge: 23\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n\n" ++
                     "First Name: Vanessa\nSecond Name: Thompson\nAge: 24\nYear of Study: 3\nModules: BS3303 BS3312 BS33333 BS2220\n\n" ++
                     "First Name: Vanessa\nSecond Name: Richards\nAge: 22\nYear of Study: 1\nModules: BS1001 BS1101 BS1112\n"
@@ -601,8 +563,8 @@ testRemoveExistantRepeat = TestCase $ do
 
 exampleStudentFile :: [Student]
 exampleStudentFile = [(Student { 
-            firstName = "Reuben", 
-            secondName = "Shaw", 
+            firstName = "Daniel", 
+            secondName = "Blain", 
             age = 20, 
             year = 2, 
             modules = ["BS2201","BS2202","BS2220","BS2221"] }),
@@ -627,8 +589,8 @@ exampleStudentFile = [(Student {
 
 exampleRealStudet :: Student
 exampleRealStudet = (Student { 
-            firstName = "Reuben", 
-            secondName = "Shaw", 
+            firstName = "Daniel", 
+            secondName = "Blain", 
             age = 20, 
             year = 2, 
             modules = ["BS2201","BS2202","BS2220","BS2221"] })
