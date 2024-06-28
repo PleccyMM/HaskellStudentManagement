@@ -27,6 +27,7 @@ module StudentDir (
     increaseYear,
     constructModule,
     checkModuleExistance,
+    enrollModule,
     searchModules,
     checkModules,
     getCode,
@@ -191,6 +192,11 @@ checkModuleExistance m = do
                 then return True
                 else do
                     return False
+
+enrollModule :: Text -> Student -> Student
+enrollModule m s = do
+    let mods = getStudentModules s
+    s{modules = m : mods}
 
 -- MODULE DETAILS --
 

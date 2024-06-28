@@ -4,6 +4,7 @@ module Main (main
             ,searchStudents
             ,addStudent
             ,deleteStudent
+            ,enrollInModule
             ,addModule
             ,deleteModule
             ,changeYear
@@ -57,7 +58,29 @@ deleteStudent i a = do
                 Just s -> do
                     let updatedStudents = remove s st
                     B.writeFile jsonFileStudent (encodePretty updatedStudents)
-    
+
+enrollInModule :: String -> [String] -> Int -> IO ()
+enrollInModule mod i a = do
+    d <- getAllModules
+    case d of
+        Left err -> putStrLn err
+        Right mods -> do
+            let d' = findCode mods (pack mod)
+            case d' of
+                Nothing -> putStrLn "Couldn't find module"
+                Just m -> do
+                    d'' <- getAllStudents
+                    case d'' of
+                        Left err -> putStrLn err
+                        Right students -> do
+                            let d''' = findSpecificStudent students (map pack i) a 
+                            case d''' of
+                                Nothing -> putStrLn "Couldn't find student"
+                                Just st -> do
+                                        let updatedStudents = remove st students ++ [enrollModule (pack mod) st]
+                                        B.writeFile jsonFileStudent (encodePretty updatedStudents)
+                                        putStrLn "Successfully enrolled"
+
 addModule :: String -> String -> IO ()
 addModule c n = do
         d <- getAllModules
@@ -69,6 +92,7 @@ addModule c n = do
                     m <- constructModule c n
                     let updatedModules = m : mods
                     B.writeFile jsonFileModule (encodePretty updatedModules)
+                    putStrLn "Successfully added module"
 
 deleteModule :: String -> IO ()
 deleteModule i = do
@@ -88,6 +112,7 @@ deleteModule i = do
                             let updatedModules = remove m mods
                             B.writeFile jsonFileStudent (encodePretty updatedStudents)
                             B.writeFile jsonFileModule (encodePretty updatedModules)
+                            putStrLn "Successfully deleted module"
 
 changeYear :: Int -> [String] -> Int -> IO ()
 changeYear y i a = do
@@ -101,6 +126,7 @@ changeYear y i a = do
                 Just s -> do
                     let updatedStudents = remove s st ++ [increaseYear s y]
                     B.writeFile jsonFileStudent (encodePretty updatedStudents)
+                    putStrLn "Successfully updated year of study"
 
 printStudentInfo :: IO ()
 printStudentInfo = do
@@ -132,12 +158,13 @@ printModuleInfo s = do
 help :: IO ()
 help = putStrLn ("\nsearchStudents \"<first or last name>\"" ++
                 "\naddStudent \"<first name>\" \"<last name>\" <age> <year> \"<module codes seperate by space>\"" ++
-                "\ndeleteStudent \"<first name>\" \"<last name>\" <year>" ++ 
-                "\naddModule <code> \"<name>\"" ++
-                "\ndeleteModule <code>" ++
-                "\nchangeYear <year> <first name> <last name> <current year>" ++
+                "\ndeleteStudent \"<first name>\" \"<last name>\" <age>" ++ 
+                "\nenrollInModule \"<module code>\" \"<first name>\" \"<last name>\" <age>" ++
+                "\naddModule \"<code>\" \"<name>\"" ++
+                "\ndeleteModule \"<code>\"" ++
+                "\nchangeYear <year> \"<first name>\" \"<last name>\" <current year>" ++
                 "\nprintStudentInfo" ++
-                "\nprintModuleInfo <code>\n")
+                "\nprintModuleInfo \"<code>\"\n")
 
 main :: IO ()
 main = do
@@ -148,7 +175,14 @@ main = do
             if isInt age && isInt year
                 then addStudent firstName lastName (read age) (read year) modules
                 else putStrLn "Ensure that the age and year and entered correctly"
-        ("deleteStudent":firstName:lastName:year:_) -> deleteStudent [firstName, lastName] (read year)
+        ("deleteStudent":firstName:lastName:age:_) -> 
+            if isInt age 
+                then deleteStudent [firstName, lastName] (read age)
+                else putStrLn "Ensure that the age is entered correctly"
+        ("enrollInModule":code:firstName:lastName:age:_) -> 
+            if isInt age 
+                then enrollInModule code [firstName, lastName] (read age)
+                else putStrLn "Ensure that the age is entered correctly"
         ("addModule":code:name:_) -> addModule code name
         ("deleteModule":code:_) -> deleteModule code
         ("changeYear":year:firstName:lastName:currentYear:_) -> changeYear (read year) [firstName, lastName] (read currentYear)
