@@ -162,7 +162,7 @@ help = putStrLn ("\nsearchStudents \"<first or last name>\"" ++
                 "\nenrollInModule \"<module code>\" \"<first name>\" \"<last name>\" <age>" ++
                 "\naddModule \"<code>\" \"<name>\"" ++
                 "\ndeleteModule \"<code>\"" ++
-                "\nchangeYear <year> \"<first name>\" \"<last name>\" <current year>" ++
+                "\nchangeYear <year> \"<first name>\" \"<last name>\" <age>" ++
                 "\nprintStudentInfo" ++
                 "\nprintModuleInfo \"<code>\"\n")
 
@@ -185,7 +185,10 @@ main = do
                 else putStrLn "Ensure that the age is entered correctly"
         ("addModule":code:name:_) -> addModule code name
         ("deleteModule":code:_) -> deleteModule code
-        ("changeYear":year:firstName:lastName:currentYear:_) -> changeYear (read year) [firstName, lastName] (read currentYear)
+        ("changeYear":year:firstName:lastName:age:_) -> 
+            if isInt age 
+                then changeYear (read year) [firstName, lastName] (read age)
+                else putStrLn "Ensure that the age is entered correctly"
         ("printStudentInfo":_) -> printStudentInfo
         ("printModuleInfo":code:_) -> printModuleInfo code
         ("help":_) -> help
