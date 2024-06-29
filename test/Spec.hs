@@ -19,24 +19,24 @@ main = do
                             testSearchAllCapital,
                             testSearchRepeat,
                             testSpecificSearchMissing,
-                            testSpecificSearchExistant,
+                            testSpecificSearchExistent,
                             testSpecificSearchEmptyText,
-                            testSpecificSearchExistantCase,
+                            testSpecificSearchExistentCase,
                             testIsIntNumber,
                             testIsIntDecimal,
                             testIsIntText,
                             testGetModuleCode,
                             testFindModuleCodeMissing,
-                            testFindModuleCodeExistant,
+                            testFindModuleCodeExistent,
                             testCheckModuleMissing,
-                            testCheckModuleExistant,
+                            testCheckModuleExistent,
                             testCheckModuleCase,
                             testCheckModuleEmptyText,
                             testCheckModuleEmptyModules,
                             testSearchModuleSingleMissing,
                             testSearchModuleMultipleMissing,
-                            testSearchModuleSingleExistant,
-                            testSearchModuleMultipleExistant,
+                            testSearchModuleSingleExistent,
+                            testSearchModuleMultipleExistent,
                             testSearchModuleMultipleMixed,
                             testSearchModuleOverflow,
                             testSearchModuleDuplicate,
@@ -49,46 +49,46 @@ main = do
                             testStudentOverlapSimilarAge,
                             testStudentOverlapDifferent,
                             testCheckEnrolledMissing,
-                            testCheckEnrolledExistant,
+                            testCheckEnrolledExistent,
                             testCheckEnrolledEmpty,
                             testClearModuleMissing,
-                            testClearModuleExistant,
+                            testClearModuleExistent,
                             testClearModuleEmpty,
                             testLineCountFew,
                             testLineCountMany,
                             testStudentToString,
                             testMultipleStudentToString,
                             testRemoveMissing,
-                            testRemoveExistant,
-                            testRemoveExistantRepeat
+                            testRemoveExistent,
+                            testRemoveExistentRepeat
                             ])
 
 -- STUDENT DETAILS TESTING --
 
 testFirstName :: Test
 testFirstName = TestCase $ do
-    let input = exampleRealStudet
+    let input = exampleRealStudent
         expected = "Daniel"
     let actual = getFirstName input
     assertEqual "checks if getting the first name works as expected" expected actual
 
 testSecondName :: Test
 testSecondName = TestCase $ do
-    let input = exampleRealStudet
+    let input = exampleRealStudent
         expected = "Blain"
     let actual = getSecondName input
     assertEqual "checks if getting the second name works as expected" expected actual
 
 testAge :: Test
 testAge = TestCase $ do
-    let input = exampleRealStudet
+    let input = exampleRealStudent
         expected = 20
     let actual = getAge input
     assertEqual "checks if getting a student's age works as expected" expected actual
 
 testEnrolledModules :: Test
 testEnrolledModules = TestCase $ do
-    let input = exampleRealStudet
+    let input = exampleRealStudent
         expected = ["BS2201","BS2202","BS2220","BS2221"]
     let actual = getStudentModules input
     assertEqual "checks if getting a student's modules works as expected" expected actual
@@ -96,14 +96,14 @@ testEnrolledModules = TestCase $ do
 testSetStudentModules :: Test
 testSetStudentModules = TestCase $ do
     let input1 = ["MD0001", "MD0002"]
-        input2 = exampleRealStudet
+        input2 = exampleRealStudent
         expected = (Student {firstName = "Daniel", secondName = "Blain", age = 20, year = 2, modules = ["MD0001", "MD0002"]})
     let actual = setStudentModules input1 input2
     assertEqual "checks if setting a student's enrolled modules works as expected" expected actual
 
 testIncreaseYear :: Test
 testIncreaseYear = TestCase $ do
-    let input1 = exampleRealStudet
+    let input1 = exampleRealStudent
         input2 = 3
         expected = (Student {firstName = "Daniel", secondName = "Blain", age = 20, year = 3, modules = ["BS2201","BS2202","BS2220","BS2221"]})
     let actual = increaseYear input1 input2
@@ -124,7 +124,7 @@ testSearchFirst :: Test
 testSearchFirst = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "Daniel"
-        expected = [exampleRealStudet]
+        expected = [exampleRealStudent]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students first name" expected actual
     
@@ -132,7 +132,7 @@ testSearchSecond :: Test
 testSearchSecond = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "Blain"
-        expected = [exampleRealStudet]
+        expected = [exampleRealStudent]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students second name" expected actual
     
@@ -140,7 +140,7 @@ testSearchAllLower :: Test
 testSearchAllLower = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "daniel"
-        expected = [exampleRealStudet]
+        expected = [exampleRealStudent]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in lowercase" expected actual
     
@@ -148,7 +148,7 @@ testSearchAllCapital :: Test
 testSearchAllCapital = TestCase $ do
     let input1 = exampleStudentFile
         input2 = "DANIEL"
-        expected = [exampleRealStudet]
+        expected = [exampleRealStudent]
     let actual = checkTextStudent input1 input2
     assertEqual "search for an existing students in uppercase" expected actual
 
@@ -182,12 +182,12 @@ testSpecificSearchMissing = TestCase $ do
     let actual = findSpecificStudent input1 input2 input3
     assertEqual "search for a specific missing student" expected actual
 
-testSpecificSearchExistant :: Test
-testSpecificSearchExistant = TestCase $ do
+testSpecificSearchExistent :: Test
+testSpecificSearchExistent = TestCase $ do
     let input1 = exampleStudentFile
         input2 = ["Daniel", "Blain"]
         input3 = 20
-        expected = Just exampleRealStudet
+        expected = Just exampleRealStudent
     let actual = findSpecificStudent input1 input2 input3
     assertEqual "search for a specific existing student" expected actual
 
@@ -200,12 +200,12 @@ testSpecificSearchEmptyText = TestCase $ do
     let actual = findSpecificStudent input1 input2 input3
     assertEqual "search for a specific student without providing a name" expected actual
 
-testSpecificSearchExistantCase :: Test
-testSpecificSearchExistantCase = TestCase $ do
+testSpecificSearchExistentCase :: Test
+testSpecificSearchExistentCase = TestCase $ do
     let input1 = exampleStudentFile
         input2 = ["DANIEL", "BLAIN"]
         input3 = 20
-        expected = Just exampleRealStudet
+        expected = Just exampleRealStudent
     let actual = findSpecificStudent input1 input2 input3
     assertEqual "search for a specific existing student all in uppercase" expected actual
 
@@ -249,13 +249,13 @@ testFindModuleCodeMissing = TestCase $ do
     let actual = findCode input1 input2
     assertEqual "checks if getting module codes works as expected by checking for a missing module" expected actual
 
-testFindModuleCodeExistant :: Test
-testFindModuleCodeExistant = TestCase $ do
+testFindModuleCodeExistent :: Test
+testFindModuleCodeExistent = TestCase $ do
     let input1 = exampleModuleFile
         input2 = pack "BS2220"
         expected = Just exampleRealModule
     let actual = findCode input1 input2
-    assertEqual "checks if getting module codes works as expected by checking for an existant module" expected actual
+    assertEqual "checks if getting module codes works as expected by checking for an existnt module" expected actual
 
 -- CHECK MODULE TESTING (NOT SEARCHING) --
 
@@ -267,8 +267,8 @@ testCheckModuleMissing = TestCase $ do
     let actual = checkModules input2 input1
     assertEqual "check for a missing module" expected actual
 
-testCheckModuleExistant :: Test
-testCheckModuleExistant = TestCase $ do
+testCheckModuleExistent :: Test
+testCheckModuleExistent = TestCase $ do
     let input1 = pack "BS2220"
         input2 = exampleModuleFile
         expected = True
@@ -317,16 +317,16 @@ testSearchModuleMultipleMissing = TestCase $ do
     let actual = searchModules input1 input2
     assertEqual "search for multiple missing modules" expected actual
 
-testSearchModuleSingleExistant :: Test
-testSearchModuleSingleExistant = TestCase $ do
+testSearchModuleSingleExistent :: Test
+testSearchModuleSingleExistent = TestCase $ do
     let input1 = map pack ["BS2220"]
         input2 = exampleModuleFile
         expected = True
     let actual = searchModules input1 input2
     assertEqual "search for a single existing module" expected actual
 
-testSearchModuleMultipleExistant :: Test
-testSearchModuleMultipleExistant = TestCase $ do
+testSearchModuleMultipleExistent :: Test
+testSearchModuleMultipleExistent = TestCase $ do
     let input1 = map pack ["BS2220", "BS2202", "BS2221"]
         input2 = exampleModuleFile
         expected = True
@@ -369,7 +369,7 @@ testSearchModuleEmptyModule = TestCase $ do
 
 testStudentOverlapIdentical :: Test
 testStudentOverlapIdentical = TestCase $ do
-    let input1 = exampleRealStudet
+    let input1 = exampleRealStudent
         input2 = exampleStudentFile
         expected = True
     let actual = checkStudentOverlap input1 input2
@@ -433,8 +433,8 @@ testCheckEnrolledMissing = TestCase $ do
     let actual = checkEnrolled input1 input2
     assertEqual "tests getting all student names who are enrolled on a missing module" expected actual
 
-testCheckEnrolledExistant :: Test
-testCheckEnrolledExistant = TestCase $ do
+testCheckEnrolledExistent :: Test
+testCheckEnrolledExistent = TestCase $ do
     let input1 = exampleStudentFile
         input2 = exampleRealModule
         expected = "Daniel Blain\nVanessa Thompson\n"
@@ -459,8 +459,8 @@ testClearModuleMissing = TestCase $ do
     let actual = clearModuleFromStudents input1 input2
     assertEqual "tests clearing a module from all students that is missing" expected actual
 
-testClearModuleExistant :: Test
-testClearModuleExistant = TestCase $ do
+testClearModuleExistent :: Test
+testClearModuleExistent = TestCase $ do
     let input1 = pack "BS2220"
         input2 = exampleStudentFile
         expected = [(Student { 
@@ -488,7 +488,7 @@ testClearModuleExistant = TestCase $ do
             year = 1, 
             modules = ["BS1001","BS1101","BS1112"] })]
     let actual = clearModuleFromStudents input1 input2
-    assertEqual "tests clearing a module from all students that is existant" expected actual
+    assertEqual "tests clearing a module from all students that is existent" expected actual
 
 testClearModuleEmpty :: Test
 testClearModuleEmpty = TestCase $ do
@@ -518,7 +518,7 @@ testLineCountMany = TestCase $ do
 
 testStudentToString :: Test
 testStudentToString = TestCase $ do
-    let input = exampleRealStudet
+    let input = exampleRealStudent
         expected = "First Name: Daniel\nSecond Name: Blain\nAge: 20\nYear of Study: 2\nModules: BS2201 BS2202 BS2220 BS2221"
     let actual = studentToString input
     assertEqual "tests conversion from student type to readable string" expected actual
@@ -543,16 +543,16 @@ testRemoveMissing = TestCase $ do
     let actual = remove input1 input2
     assertEqual "tests removing from a list that doesn't have the value" expected actual
 
-testRemoveExistant :: Test
-testRemoveExistant = TestCase $ do
+testRemoveExistent :: Test
+testRemoveExistent = TestCase $ do
     let input1 = "fo"
         input2 = exampleStringList
         expected = ["fi", "do", "lo", "ho", "so"]
     let actual = remove input1 input2
     assertEqual "tests removing from a list that has the value" expected actual
 
-testRemoveExistantRepeat :: Test
-testRemoveExistantRepeat = TestCase $ do
+testRemoveExistentRepeat :: Test
+testRemoveExistentRepeat = TestCase $ do
     let input1 = 1
         input2 = exampleIntegerList
         expected = [3, 7, 8, 0, 4]
@@ -587,8 +587,8 @@ exampleStudentFile = [(Student {
             year = 1, 
             modules = ["BS1001","BS1101","BS1112"] })]
 
-exampleRealStudet :: Student
-exampleRealStudet = (Student { 
+exampleRealStudent :: Student
+exampleRealStudent = (Student { 
             firstName = "Daniel", 
             secondName = "Blain", 
             age = 20, 
@@ -600,7 +600,7 @@ exampleModuleFile = [(Module {code = "BS2221", name = "Discrete Mathematics"}),
                 (Module {code = "BS2220", name = "Functional Programming"}),
                 (Module {code = "BS2202", name = "Object Oriented Software Development"}),
                 (Module {code = "BS2203", name = "Secure Systems Architectures"}),
-                (Module {code = "BS2201", name = "Intergrated Project"})]
+                (Module {code = "BS2201", name = "Integrated Project"})]
 
 exampleRealModule :: Module
 exampleRealModule = (Module {code = "BS2220", name = "Functional Programming"})
