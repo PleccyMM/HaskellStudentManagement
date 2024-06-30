@@ -42,7 +42,7 @@ module StudentDir (
 import Data.Aeson (FromJSON, ToJSON, eitherDecode)
 import qualified Data.ByteString.Lazy as B
 import Data.Char
-import Data.Text hiding (elem, filter, head, last, length, map, unwords)
+import Data.Text hiding (elem, filter, head, last, length, map, unwords, all, null)
 import qualified Data.Text.IO as I
 import GHC.Generics
 import System.Directory
@@ -137,8 +137,7 @@ constructStudent :: String -> String -> Int -> Int -> [String] -> IO Student
 constructStudent fn ln a y m = do return $ Student (pack fn) (pack ln) a y (map pack m)
 
 isInt :: String -> Bool
-isInt "" = True
-isInt (x : xs) = if isDigit x then isInt xs else False
+isInt s = not (null s) && all isDigit s
 
 checkStudentOverlap :: Student -> [Student] -> Bool
 checkStudentOverlap (Student{firstName = f, secondName = s, age = a}) st = case (findSpecificStudent st [f, s] a) of

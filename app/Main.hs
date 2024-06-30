@@ -174,7 +174,7 @@ main = do
         ("addStudent":firstName:lastName:age:year:modules:_) -> 
             if isInt age && isInt year
                 then addStudent firstName lastName (read age) (read year) modules
-                else putStrLn "Ensure that the age and year and entered correctly"
+                else putStrLn "Ensure that the age and year are entered correctly"
         ("deleteStudent":firstName:lastName:age:_) -> 
             if isInt age 
                 then deleteStudent [firstName, lastName] (read age)
@@ -186,9 +186,9 @@ main = do
         ("addModule":code:name:_) -> addModule code name
         ("deleteModule":code:_) -> deleteModule code
         ("changeYear":year:firstName:lastName:age:_) -> 
-            if isInt age 
+            if isInt age  && isInt year
                 then changeYear (read year) [firstName, lastName] (read age)
-                else putStrLn "Ensure that the age is entered correctly"
+                else putStrLn "Ensure that the age and year are entered correctly"
         ("printStudentInfo":_) -> printStudentInfo
         ("printModuleInfo":code:_) -> printModuleInfo code
         ("help":_) -> help
