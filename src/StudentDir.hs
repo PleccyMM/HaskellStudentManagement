@@ -31,6 +31,7 @@ module StudentDir (
     searchModules,
     checkModules,
     getCode,
+    getName,
     findCode,
     checkEnrolled,
     getStudentModules,
@@ -211,6 +212,9 @@ checkModules (x : xs) t = if l t == l (getCode x) then True else checkModules xs
 
 getCode :: Module -> Text
 getCode (Module{code = c}) = c
+
+getName :: Module -> Text
+getName (Module{name = n}) = n
 
 findCode :: [Module] -> Text -> Maybe Module
 findCode [] _ = Nothing

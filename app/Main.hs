@@ -151,7 +151,7 @@ printModuleInfo s = do
                     d' <- getAllStudents
                     case d' of
                         Left err -> putStrLn err
-                        Right st -> hPutStr inputHandle ("Module " ++ s ++ " Enrollment:\n\n" ++ c ++ "\nNumber of Students: " ++ show (countNumberOfLines c))
+                        Right st -> hPutStr inputHandle ("Module " ++ s ++ " " ++ unpack (getName mc) ++ " Enrollment:\n\n" ++ c ++ "\nNumber of Students: " ++ show (countNumberOfLines c))
                             where c = checkEnrolled st mc
     hClose inputHandle
 
