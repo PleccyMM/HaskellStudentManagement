@@ -14,7 +14,7 @@
 >**All available commands can also be found by doing `stack run -- help`** <br/><br/>
 >Ensure quotation marks are respected for relevant pieces of data input
 
-1. `searchStudents "<first or last name>"` - prints all student information to console
+1. `searchStudents "<first or last name>"` - prints all student information about students who share the name given to console
 2. `addStudent "<first name>" "<last name>" <age> <year> "<module codes seperate by space>"` - adds a new student to the JSON file, must not share name and age with an existing student
 3. `deleteStudent "<first name>" "<last name>" <age>` - deletes the student, specified by their name and age, in the JSON file
 4. `enrollInModule "<module code>" "<first name>" "<last name>" <age>` - enrolls the student, specified by their name and age, into the module, denoted by its code
